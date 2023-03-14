@@ -1,5 +1,13 @@
 from tokenList import *
-    
+
+def checkKeywordToken(token):
+    try:
+        return KeywordTokens(token)
+    except:
+        varLiteralToken = VariableLiteralToken()
+        varLiteralToken.value = token
+        return varLiteralToken
+
 def lex(fileName):
     tokenList = []
     file = open(fileName, 'r')
@@ -16,14 +24,18 @@ def lex(fileName):
                 token = token + char
                 char = file.read(1)
             file.seek(file.tell()-1)
-            tokenList.append(token)
+            tokenList.append(checkKeywordToken(token))
+
         elif char.isnumeric():
             token = ''
             while char.isnumeric():
                 token = token + char
                 char = file.read(1)
             file.seek(file.tell()-1)
-            tokenList.append(int(token))
+            numLiteralToken = NumericLiteralToken()
+            numLiteralToken.value = int(token)
+            tokenList.append(token)
+
         elif char == '"':
             token = char
             char = file.read(1)
@@ -34,30 +46,51 @@ def lex(fileName):
                 token = token + char
                 char = file.read(1)
             token = token + char
-            tokenList.append(token)
+            strLiteralToken = StringLiteralToken()
+            strLiteralToken.value = token
+            tokenList.append(strLiteralToken)
 
         elif char == '(':
-            tokenList.append(Tokens.OPEN_PAREN)
+            tokenList.append(ExpressionTokens.OPEN_PAREN)
         elif char == ')':
-            tokenList.append(Tokens.CLOSE_PAREN)
+            tokenList.append(ExpressionTokens.CLOSE_PAREN)
         elif char == '=':
-            tokenList.append(Tokens.ASSIGNMENT)
+            char = file.read(1)
+            if char == '=':
+                tokenList.append(LogicTokens.EQUAL_TO)
+            else:
+                file.seek(file.tell()-1)
+                tokenList.append(ExpressionTokens.ASSIGNMENT)
         elif char == ';':
-            tokenList.append(Tokens.TERMINATOR)
+            tokenList.append(ExpressionTokens.TERMINATOR)
         elif char == '<':
-            tokenList.append(Tokens.LESS_THAN)
+            char = file.read(1)
+            if char == '=':
+                tokenList.append(LogicTokens.LESS_THAN_EQUAL_TO)
+            else:
+                file.seek(file.tell()-1)
+                tokenList.append(LogicTokens.LESS_THAN)
         elif char == '>':
-            tokenList.append(Tokens.GREATER_THAN)
+            char = file.read(1)
+            if char == '=':
+                tokenList.append(LogicTokens.GREATER_THAN_EQUAL_TO)
+            else:
+                file.seek(file.tell()-1)
+                tokenList.append(LogicTokens.GREATER_THAN)
         elif char == ',':
-            tokenList.append(Tokens.COMMA)
+            tokenList.append(ExpressionTokens.COMMA)
+        elif char == '[':
+            tokenList.append(ExpressionTokens.OPEN_BRAC)
+        elif char == ']':
+            tokenList.append(ExpressionTokens.CLOSE_BRAC)
         elif char == '/':
-            tokenList.append(Tokens.DIVIDE)
+            tokenList.append(ArithmaticTokens.DIVIDE)
         elif char == '*':
-            tokenList.append(Tokens.MULTIPLY)
+            tokenList.append(ArithmaticTokens.MULTIPLY)
         elif char == '-':
-            tokenList.append(Tokens.SUBTRACT)
+            tokenList.append(ArithmaticTokens.SUBTRACT)
         elif char == '+':
-            tokenList.append(Tokens.ADD)
+            tokenList.append(ArithmaticTokens.ADD)
         elif not char:
             break
     file.close()
