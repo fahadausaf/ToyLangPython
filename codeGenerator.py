@@ -10,7 +10,6 @@ def generateArithmaticOperand(operand):
         return ' * '
     elif (operand == ArithmaticLogicOperands.Div):
         return ' / '
-
     
 def generateLogicOperand(operand):
     if (operand == LogicOperands.LessThan):
@@ -23,7 +22,6 @@ def generateLogicOperand(operand):
         return ' >= '
     elif (operand == LogicOperands.EqualTo):
         return ' == '
-
 
 def generateExpression(expression):
     code = ''
@@ -49,7 +47,6 @@ def generateExpression(expression):
         code = code + generateExpression(expression.right)
 
     return code
-
 
 def generateStatement(statement):
     code = ''

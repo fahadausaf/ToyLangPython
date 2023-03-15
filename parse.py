@@ -121,10 +121,10 @@ def parseStatement(currentToken, listTokens):
     
     elif listTokens[currentToken] == KeywordTokens.INT:
         currentToken += 1
-        declareVariable = DeclareIntVariable()
+        declareIntVariable = DeclareIntVariable()
 
         if (currentToken < len(listTokens) - 1 and type(listTokens[currentToken]) == VariableLiteralToken):
-            declareVariable.identifier = listTokens[currentToken]
+            declareIntVariable.identifier = listTokens[currentToken]
         else:
             raise Exception(
                 'ERROR: Variable name was expected after keyword int')
@@ -135,17 +135,16 @@ def parseStatement(currentToken, listTokens):
             raise Exception('ERROR: = sign was expected after variable name')
 
         currentToken += 1
-        (declareVariable.expression, currentToken) = parseExpression(
+        (declareIntVariable.expression, currentToken) = parseExpression(
             currentToken, listTokens)
 
-        # currentToken += 1
         if listTokens[currentToken] == ExpressionTokens.TERMINATOR:
-            declareVariable.terminator = Terminator()
+            declareIntVariable.terminator = Terminator()
         else:
             raise Exception(
                 'ERROR: ; sign was expected after variable declaration')
 
-        parsedStatement = declareVariable
+        parsedStatement = declareIntVariable
 
     else:
         print('Some other token')

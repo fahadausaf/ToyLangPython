@@ -34,7 +34,7 @@ def lex(fileName):
             file.seek(file.tell()-1)
             numLiteralToken = NumericLiteralToken()
             numLiteralToken.value = int(token)
-            tokenList.append(token)
+            tokenList.append(numLiteralToken)
 
         elif char == '"':
             token = char

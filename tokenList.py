@@ -1,7 +1,10 @@
 from enum import Enum
 
-class Tokens(Enum):
-    pass
+
+class Token():
+    token = None
+    lineNo = None
+    charNo = None
 
 class LiteralTokens():
     pass
@@ -22,14 +25,14 @@ class ArithmaticTokens(Enum):
     DIVIDE = '/'
     
 
-class LogicTokens(Tokens):
+class LogicTokens(Enum):
     EQUAL_TO = '=='
     LESS_THAN = '<'
     LESS_THAN_EQUAL_TO = '<='
     GREATER_THAN = '>'
     GREATER_THAN_EQUAL_TO = '>='
 
-class ExpressionTokens(Tokens):
+class ExpressionTokens(Enum):
     TERMINATOR = ';'
     ASSIGNMENT = '='
     COMMA = ','
@@ -38,7 +41,7 @@ class ExpressionTokens(Tokens):
     OPEN_BRAC = '['
     CLOSE_BRAC = ']'
 
-class KeywordTokens(Tokens):
+class KeywordTokens(Enum):
     INT = 'int'
     CHAR = 'char'
     PRINT = 'printf'
