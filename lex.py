@@ -14,7 +14,7 @@ def lex(fileName):
     
     # variables to track the position of the token in the file
     linePos = 1
-    charPos = 0
+    colPos = 0
     tokenPos = 0
     
     # Read the file charcter by character to build tokens
@@ -22,131 +22,135 @@ def lex(fileName):
     while 1:
         char = file.read(1)
 
-        charPos += 1
+        colPos += 1
 
         if char == '\n':
             linePos += 1
-            #charPos = 1
+            colPos = 0
         elif char.isspace():
             #charPos += 1
             None
         elif char.isalpha():
             token = ''
-            tokenPos = charPos
+            tokenPos = colPos
             while char.isalnum():
                 token = token + char
                 char = file.read(1)
-                charPos += 1
-            file.seek(file.tell()-1)
-            charPos -= 1
-            tokenList.append((linePos, tokenPos, checkKeywordToken(token)))
+                colPos += 1
+            tokenList.append((checkKeywordToken(token), linePos, tokenPos, colPos))
+            if char:
+                # unread the last character
+                file.seek(file.tell()-1)
+                colPos -= 1
+            
 
         elif char.isnumeric():
             token = ''
-            tokenPos = charPos
+            tokenPos = colPos
             while char.isnumeric():
                 token = token + char
                 char = file.read(1)
-                charPos += 1
+                colPos += 1
             
             numLiteralToken = NumericLiteralToken()
             numLiteralToken.value = int(token)
-            tokenList.append((linePos, tokenPos, numLiteralToken))
-            if not char:
-                break
-            file.seek(file.tell()-1)
-            charPos -= 1
+            tokenList.append((numLiteralToken, linePos, tokenPos, colPos))
+            if char:
+                # unread the last character
+                file.seek(file.tell()-1)
+                colPos -= 1
 
         elif char == '"':
             token = char
-            tokenPos = charPos
+            tokenPos = colPos
             char = file.read(1)
-            charPos += 1
+            colPos += 1
             while char != '"':
                 if not char:
                     print('Invalid Token')
                     break
                 token = token + char
                 char = file.read(1)
-                charPos += 1
+                colPos += 1
             token = token + char
             strLiteralToken = StringLiteralToken()
             strLiteralToken.value = token
-            tokenList.append((linePos, tokenPos, strLiteralToken))
+            tokenList.append((strLiteralToken, linePos, tokenPos, colPos))
 
         elif char == '(':
-            tokenPos = charPos
-            charPos += 1
-            tokenList.append((linePos, tokenPos, ExpressionTokens.OPEN_PAREN))
+            tokenPos = colPos
+            colPos += 1
+            tokenList.append((ExpressionTokens.OPEN_PAREN, linePos, tokenPos, colPos))
         elif char == ')':
-            tokenPos = charPos
-            charPos += 1
-            tokenList.append((linePos, tokenPos, ExpressionTokens.CLOSE_PAREN))
+            tokenPos = colPos
+            colPos += 1
+            tokenList.append((ExpressionTokens.CLOSE_PAREN, linePos, tokenPos, colPos))
         elif char == '=':
-            tokenPos = charPos
+            tokenPos = colPos
             char = file.read(1)
-            charPos += 1
+            colPos += 1
             if char == '=':
-                tokenList.append((linePos, tokenPos, LogicTokens.EQUAL_TO))
+                tokenList.append((LogicTokens.EQUAL_TO, linePos, tokenPos, colPos))
             else:
                 file.seek(file.tell()-1)
-                charPos -= 1
-                tokenList.append((linePos, tokenPos, ExpressionTokens.ASSIGNMENT))
+                colPos -= 1
+                tokenList.append((ExpressionTokens.ASSIGNMENT, linePos, tokenPos, colPos))
         elif char == ';':
-            tokenPos = charPos
-            charPos += 1
-            tokenList.append((linePos, tokenPos, ExpressionTokens.TERMINATOR))
+            tokenPos = colPos
+            colPos += 1
+            tokenList.append((ExpressionTokens.TERMINATOR, linePos, tokenPos, colPos))
         elif char == '<':
-            tokenPos = charPos
-            charPos += 1
+            tokenPos = colPos
+            colPos += 1
             char = file.read(1)
-            charPos += 1
+            colPos += 1
             if char == '=':
-                tokenList.append((linePos, tokenPos, LogicTokens.LESS_THAN_EQUAL_TO))
+                tokenList.append((LogicTokens.LESS_THAN_EQUAL_TO, linePos, tokenPos, colPos))
             else:
                 file.seek(file.tell()-1)
-                charPos -= 1
-                tokenList.append((linePos, tokenPos, LogicTokens.LESS_THAN))
+                colPos -= 1
+                tokenList.append((LogicTokens.LESS_THAN, linePos, tokenPos, colPos))
         elif char == '>':
-            tokenPos = charPos
-            charPos += 1
+            tokenPos = colPos
+            colPos += 1
             char = file.read(1)
-            charPos += 1
+            colPos += 1
             if char == '=':
-                tokenList.append((linePos, tokenPos, LogicTokens.GREATER_THAN_EQUAL_TO))
+                tokenList.append((LogicTokens.GREATER_THAN_EQUAL_TO, linePos, tokenPos, colPos))
             else:
                 file.seek(file.tell()-1)
-                charPos -= 1
-                tokenList.append((linePos, tokenPos, LogicTokens.GREATER_THAN))
+                colPos -= 1
+                tokenList.append((LogicTokens.GREATER_THAN, linePos, tokenPos, colPos))
         elif char == ',':
-            tokenPos = charPos
-            charPos += 1
-            tokenList.append((linePos, tokenPos, ExpressionTokens.COMMA))
+            tokenPos = colPos
+            colPos += 1
+            tokenList.append((ExpressionTokens.COMMA, linePos, tokenPos, colPos))
         elif char == '[':
-            tokenPos = charPos
-            charPos += 1
-            tokenList.append((linePos, tokenPos, ExpressionTokens.OPEN_BRAC))
+            tokenPos = colPos
+            colPos += 1
+            tokenList.append((ExpressionTokens.OPEN_BRAC, linePos, tokenPos, colPos))
         elif char == ']':
-            tokenPos = charPos
-            charPos += 1
-            tokenList.append((linePos, tokenPos, ExpressionTokens.CLOSE_BRAC))
+            tokenPos = colPos
+            colPos += 1
+            tokenList.append((ExpressionTokens.CLOSE_BRAC, linePos, tokenPos, colPos))
         elif char == '/':
-            tokenPos = charPos
-            charPos += 1
-            tokenList.append((linePos, tokenPos, ArithmaticTokens.DIVIDE))
+            tokenPos = colPos
+            colPos += 1
+            tokenList.append((ArithmaticTokens.DIVIDE, linePos, tokenPos, colPos))
         elif char == '*':
-            tokenPos = charPos
-            charPos += 1
-            tokenList.append((linePos, tokenPos, ArithmaticTokens.MULTIPLY))
+            tokenPos = colPos
+            colPos += 1
+            tokenList.append((ArithmaticTokens.MULTIPLY, linePos, tokenPos, colPos))
         elif char == '-':
-            tokenPos = charPos
-            charPos += 1
-            tokenList.append((linePos, tokenPos, ArithmaticTokens.SUBTRACT))
+            tokenPos = colPos
+            colPos += 1
+            tokenList.append((ArithmaticTokens.SUBTRACT, linePos, tokenPos, colPos))
         elif char == '+':
-            tokenPos = charPos
-            charPos += 1
-            tokenList.append((linePos, tokenPos, ArithmaticTokens.ADD))
+            tokenPos = colPos
+            colPos += 1
+            tokenList.append((ArithmaticTokens.ADD, linePos, tokenPos, colPos))
         elif not char:
+            tokenList.append((EOF(), linePos, tokenPos, colPos))
             break
     file.close()
 

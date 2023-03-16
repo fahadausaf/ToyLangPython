@@ -9,6 +9,10 @@ class Token():
 class LiteralTokens():
     pass
 
+# End of File token
+class EOF(LiteralTokens):
+    pass
+
 class VariableLiteralToken(LiteralTokens):
     value = None
 
@@ -44,4 +48,8 @@ class ExpressionTokens(Enum):
 class KeywordTokens(Enum):
     INT = 'int'
     CHAR = 'char'
-    PRINT = 'printf'
+    PRINTF = 'printf'
+    IF = 'if'
+    THEN = 'then'
+    ELSE = 'else'
+    ENDIF = 'endif'

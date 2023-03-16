@@ -1,1 +1,2 @@
-printf("a is less than 20\n" );
+printf "abc";
+printf 2 ;

@@ -65,6 +65,10 @@ class Assignment(Statement):
     identifier = None
     expression = Expression()
 
+class Printf(Statement):
+    expression = Expression()
+    terminator = Terminator()
+
 class StatementSequence(Statement):
     left = Statement()
     right = Statement()
