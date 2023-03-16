@@ -5,7 +5,6 @@ from enum import Enum
 class Statement(ABC):
     pass
 
-
 class Expression(ABC):
     pass
 
@@ -16,7 +15,6 @@ class ArithmaticLogicOperands(Enum):
     Mul = '*'
     Div = '/'
 
-
 ArithmaticLogicOperands = Enum('ArithmaticLogicOperands', ['Add', 'Sub', 'Mul', 'Div'])
 
 class LogicOperands(Enum):
@@ -25,6 +23,8 @@ class LogicOperands(Enum):
     GreaterThan = '>'
     GreaterThanEqualTo = '>='
     EqualTo = '=='
+    Not = '!'
+    NotEqualTo = '!='
 
 LogicOperands = Enum('LogicOperands', ['LessThan','LessThanEqualTo', 'GreaterThan', 'GreaterThanEqualTo', 'EqualTo'])
 
@@ -75,6 +75,11 @@ class Printf(Statement):
 class StatementSequence(Statement):
     left = Statement()
     right = Statement()
+
+class IfThenElse(Statement):
+    ifCondition = LogicExpression()
+    thenStatement = Statement()
+    elseStatement = None
 
 
 

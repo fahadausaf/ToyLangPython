@@ -30,7 +30,9 @@ class ArithmaticTokens(Enum):
     
 
 class LogicTokens(Enum):
+    NOT = '!'
     EQUAL_TO = '=='
+    NOT_EQUAL_TO = '!='
     LESS_THAN = '<'
     LESS_THAN_EQUAL_TO = '<='
     GREATER_THAN = '>'

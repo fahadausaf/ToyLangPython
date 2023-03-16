@@ -88,6 +88,7 @@ def parseStatement(currentToken, listTokens):
 
     elif listTokens[currentToken][0] == ExpressionTokens.TERMINATOR:
         parsedStatement = Terminator()
+        print('Terminating')
 
     elif listTokens[currentToken][0] == KeywordTokens.CHAR:
         currentToken += 1
@@ -154,29 +155,63 @@ def parseStatement(currentToken, listTokens):
         currentToken += 1
         printf = Printf()
         (printf.expression, currentToken) = parseExpression(currentToken, listTokens)
-
+        
         if listTokens[currentToken][0] == ExpressionTokens.TERMINATOR:
             printf.terminator = Terminator()
         else:
             raise Exception(
-                'Line: ' + str(listTokens[currentToken][1]) + ', Col: ' + str(listTokens[currentToken][2]) + '\nDescription: ; sign was expected after printf expression')
+                'Line: ' + str(listTokens[currentToken][1]) + ', Col: ' + str(listTokens[currentToken][2]) + 
+                '\nDescription: ; sign was expected after printf expression')
 
-        
         parsedStatement = printf
 
-    
+    elif listTokens[currentToken][0] == KeywordTokens.IF:
+
+        currentToken += 1
+        ifThenElse = IfThenElse()
+        (ifThenElse.ifCondition, currentToken) = parseExpression(currentToken, listTokens)
+
+        if listTokens[currentToken][0] != KeywordTokens.THEN:
+            raise Exception(
+                'Line: ' + str(listTokens[currentToken][1]) + ', Col: ' + str(listTokens[currentToken][2]) + 
+                '\nDescription: then keyword was expected after if-condition')
+        
+        currentToken += 1
+        (ifThenElse.thenStatement, currentToken)  = parseStatement(currentToken, listTokens)
+        currentToken += 1
+        (ifThenElse.elseStatement, currentToken)  = parseStatement(currentToken, listTokens)
+
+        if listTokens[currentToken][0] != KeywordTokens.ENDIF:
+            raise Exception(
+                'Line: ' + str(listTokens[currentToken][1]) + ', Col: ' + str(listTokens[currentToken][2]) + 
+                '\nDescription: endif keyword was expected after then/else expression')
+        
+        currentToken += 1
+        if listTokens[currentToken][0] != ExpressionTokens.TERMINATOR:
+            raise Exception(
+                'Line: ' + str(listTokens[currentToken][1]) + ', Col: ' + str(listTokens[currentToken][2]) + 
+                '\nDescription: ; sign was expected after printf expression')
+        
+        currentToken += 1
+        parsedStatement = ifThenElse
+
     elif type(listTokens[currentToken][0]) == EOF:
         eof = EndFile()
         parsedStatement = eof
+    elif listTokens[currentToken][0] == KeywordTokens.ELSE:
+        return (parsedStatement, currentToken)
+
+    elif listTokens[currentToken][0] == KeywordTokens.ENDIF:
+        return (parsedStatement, currentToken)
+
     else:
-        print('Unknown Error')
         return None
 
     if (currentToken < len(listTokens) - 1):
         currentToken += 1
         sequence = StatementSequence()
         sequence.left = parsedStatement
-        sequence.right = parseStatement(currentToken, listTokens)
+        (sequence.right, currentToken) = parseStatement(currentToken, listTokens)
         parsedStatement = sequence
 
-    return parsedStatement
+    return (parsedStatement, currentToken)

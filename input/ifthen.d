@@ -1,10 +1,5 @@
-if FirstNum > SecondNum then
-	if FirstNum > 9 then
-		print "First Number is greater then 9";
-	else
-		print "First Number is less then 9";
-	endif;
-	print "first number is GREATER than second number";
+if 10 > 9 then
+	printf "Bigger";
 else
-	print "first number is LESS than second number";
+	printf "Smaller";
 endif;
