@@ -81,6 +81,15 @@ def generateStatement(statement):
             code = code + generateStatement(assign)
             code = code + generateStatement(declare.terminator)
 
+    elif (type(statement) == IfThenElse):
+
+        ifThenElse = IfThenElse()
+        ifThenElse = statement
+
+        code = 'if (' + generateExpression(ifThenElse.ifCondition) + ')\n{\n'
+        code = code + generateStatement(ifThenElse.thenStatement) + '}\nelse\n{\n'
+        code = code + generateStatement(ifThenElse.elseStatement) + '}'
+
     elif (type(statement) == Printf):
         code = 'printf(' + generateExpression(statement.expression) + ')' + generateStatement(statement.terminator)
     
@@ -104,5 +113,6 @@ def generateStatement(statement):
         code = ''
 
     else:
+        print(statement)
         print('Unknown Token Type')
     return code
