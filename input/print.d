@@ -1,2 +1,4 @@
 printf "abc";
-printf 2 ;
+printf 25;
+printf 15 + 7;
+printf 25 + 3;

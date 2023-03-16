@@ -15,9 +15,8 @@ def printTokens(tokenList):
         n += 1
 
 tokenList = lex(file_printf)
-printTokens(tokenList)
+#printTokens(tokenList)
 
 parseResult = parseStatement(0, tokenList)
-# print(parseResult.expression.value)
-#code = generateStatement(parseResult)
-#print(code)
+code = generateStatement(parseResult)
+print(code)

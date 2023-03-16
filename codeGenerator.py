@@ -81,6 +81,9 @@ def generateStatement(statement):
             code = code + generateStatement(assign)
             code = code + generateStatement(declare.terminator)
 
+    elif (type(statement) == Printf):
+        code = 'printf(' + generateExpression(statement.expression) + ')' + generateStatement(statement.terminator)
+    
     elif (type(statement) == Assignment):
         if(type(statement.expression) == StringValue):
             code = statement.identifier.value + '[] = '
@@ -97,7 +100,9 @@ def generateStatement(statement):
     elif (type(statement) == Terminator):
         code = ';\n'
 
+    elif (type(statement) == EndFile):
+        code = ''
+
     else:
-        print('Some other type')
-        print(code)
+        print('Unknown Token Type')
     return code

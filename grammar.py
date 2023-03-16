@@ -28,6 +28,9 @@ class LogicOperands(Enum):
 
 LogicOperands = Enum('LogicOperands', ['LessThan','LessThanEqualTo', 'GreaterThan', 'GreaterThanEqualTo', 'EqualTo'])
 
+class EndFile(Expression):
+    pass
+
 class Terminator(Expression):
     pass
 

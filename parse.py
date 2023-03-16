@@ -166,7 +166,8 @@ def parseStatement(currentToken, listTokens):
 
     
     elif type(listTokens[currentToken][0]) == EOF:
-        return parsedStatement
+        eof = EndFile()
+        parsedStatement = eof
     else:
         print('Unknown Error')
         return None
