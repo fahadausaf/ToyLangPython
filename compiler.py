@@ -19,17 +19,6 @@ tokenList = lex(file_ifThenElse)
 #printTokens(tokenList)
 
 (parseResult, currentToken) = parseStatement(0, tokenList)
-print(parseResult)
-print()
-print(parseResult.ifCondition)
-print()
-print(parseResult.thenStatement)
-print()
-print(parseResult.elseStatement)
-print('==========')
-print()
-
-
 
 
 code = generateStatement(parseResult)

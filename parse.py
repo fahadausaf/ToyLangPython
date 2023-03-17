@@ -178,6 +178,11 @@ def parseStatement(currentToken, listTokens):
         
         currentToken += 1
         (ifThenElse.thenStatement, currentToken)  = parseStatement(currentToken, listTokens)
+
+        # set the statement.right to None if there is no code
+        if(type(ifThenElse.thenStatement.right) == Statement):
+            ifThenElse.thenStatement.right = None
+
         currentToken += 1
         (ifThenElse.elseStatement, currentToken)  = parseStatement(currentToken, listTokens)
 

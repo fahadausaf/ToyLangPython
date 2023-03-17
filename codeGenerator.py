@@ -112,6 +112,10 @@ def generateStatement(statement):
     elif (type(statement) == EndFile):
         code = ''
 
+    elif (type(statement) == Statement):
+        None
+    elif (statement == None):
+        None
     else:
         print(statement)
         print('Unknown Token Type')
