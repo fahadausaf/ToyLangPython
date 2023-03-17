@@ -88,7 +88,6 @@ def parseStatement(currentToken, listTokens):
 
     elif listTokens[currentToken][0] == ExpressionTokens.TERMINATOR:
         parsedStatement = Terminator()
-        print('Terminating')
 
     elif listTokens[currentToken][0] == KeywordTokens.CHAR:
         currentToken += 1
@@ -183,8 +182,10 @@ def parseStatement(currentToken, listTokens):
         if(type(ifThenElse.thenStatement.right) == Statement):
             ifThenElse.thenStatement.right = None
 
-        currentToken += 1
-        (ifThenElse.elseStatement, currentToken)  = parseStatement(currentToken, listTokens)
+        # if current token is not ENDIF then this is an ELSE block
+        if listTokens[currentToken][0] != KeywordTokens.ENDIF:
+            currentToken += 1
+            (ifThenElse.elseStatement, currentToken)  = parseStatement(currentToken, listTokens)
 
         if listTokens[currentToken][0] != KeywordTokens.ENDIF:
             raise Exception(
@@ -203,6 +204,7 @@ def parseStatement(currentToken, listTokens):
     elif type(listTokens[currentToken][0]) == EOF:
         eof = EndFile()
         parsedStatement = eof
+    
     elif listTokens[currentToken][0] == KeywordTokens.ELSE:
         return (parsedStatement, currentToken)
 

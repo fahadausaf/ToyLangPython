@@ -87,8 +87,9 @@ def generateStatement(statement):
         ifThenElse = statement
 
         code = 'if (' + generateExpression(ifThenElse.ifCondition) + ')\n{\n'
-        code = code + generateStatement(ifThenElse.thenStatement) + '}\nelse\n{\n'
-        code = code + generateStatement(ifThenElse.elseStatement) + '}'
+        code = code + generateStatement(ifThenElse.thenStatement) + '}\n'
+        if (ifThenElse.elseStatement != None):
+            code = code + 'else\n{\n' + generateStatement(ifThenElse.elseStatement) + '}'
 
     elif (type(statement) == Printf):
         code = 'printf(' + generateExpression(statement.expression) + ')' + generateStatement(statement.terminator)

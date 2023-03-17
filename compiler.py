@@ -5,7 +5,7 @@ from tokenList import *
 
 file_test_01 = 'input\\test_lex\\test_01_int_01.d'
 file_printf = 'input\\print.d'
-file_ifThenElse = 'input\\ifthen.d'
+file_ifThenElse = 'input\\ifthen2.d'
 
 def printTokens(tokenList):
     n = 1
