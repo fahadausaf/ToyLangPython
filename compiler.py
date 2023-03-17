@@ -6,6 +6,7 @@ from tokenList import *
 file_test_01 = 'input\\test_lex\\test_01_int_01.d'
 file_printf = 'input\\print.d'
 file_ifThenElse = 'input\\ifthen2.d'
+file_function = 'input\\function.d'
 
 def printTokens(tokenList):
     n = 1
@@ -15,10 +16,11 @@ def printTokens(tokenList):
         print('Line: ' + str(t[1]) + ', Col: ' + str(t[2]) + '\n')
         n += 1
 
-tokenList = lex(file_ifThenElse)
-#printTokens(tokenList)
+tokenList = lex(file_function)
+printTokens(tokenList)
 
 (parseResult, currentToken) = parseStatement(0, tokenList)
+print(parseResult)
 
 
 code = generateStatement(parseResult)

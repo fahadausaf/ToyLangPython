@@ -55,3 +55,4 @@ class KeywordTokens(Enum):
     THEN = 'then'
     ELSE = 'else'
     ENDIF = 'endif'
+    FUNCTION = 'function'

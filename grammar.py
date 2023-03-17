@@ -9,6 +9,9 @@ class Expression(ABC):
     pass
 
 
+class ListOperand(Enum):
+    Comma = ','
+
 class ArithmaticLogicOperands(Enum):
     Add = '+'
     Sub = '-'
@@ -63,6 +66,9 @@ class DeclareCharVariable(Statement):
     identifier = None
     expression = StringValue()
     terminator = Terminator()
+
+class FunctionDefinition(Statement):
+    identifier = None
 
 class Assignment(Statement):
     identifier = None

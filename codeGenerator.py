@@ -81,6 +81,13 @@ def generateStatement(statement):
             code = code + generateStatement(assign)
             code = code + generateStatement(declare.terminator)
 
+    elif (type(statement) == FunctionDefinition):
+
+        functionDef = FunctionDefinition()
+        functionDef = statement
+
+        code = 'int ' + functionDef.identifier.value + '()\n{\nreturn 0;\n}'
+    
     elif (type(statement) == IfThenElse):
 
         ifThenElse = IfThenElse()
@@ -113,10 +120,9 @@ def generateStatement(statement):
     elif (type(statement) == EndFile):
         code = ''
 
-    elif (type(statement) == Statement):
+    elif (type(statement) == Statement or statement == None):
         None
-    elif (statement == None):
-        None
+        
     else:
         print(statement)
         print('Unknown Token Type')
