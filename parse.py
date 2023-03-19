@@ -150,6 +150,25 @@ def parseStatement(currentToken, listTokens):
 
         parsedStatement = declareIntVariable
 
+    elif listTokens[currentToken][0] == KeywordTokens.FUNCTION:
+        currentToken += 1
+        functionDef = FunctionDefinition()
+        
+        if type(listTokens[currentToken][0]) != VariableLiteralToken:
+            raise Exception(
+                'Line: ' + str(listTokens[currentToken][1]) + ', Col: ' + str(listTokens[currentToken][2]) + 
+                '\nDescription: function name was expected after keyword function')
+        
+        functionDef.identifier = listTokens[currentToken][0]
+
+        if listTokens[currentToken+1][0] != ExpressionTokens.OPEN_PAREN or listTokens[currentToken+2][0] != ExpressionTokens.CLOSE_PAREN:
+            raise Exception(
+                'Line: ' + str(listTokens[currentToken][1]) + ', Col: ' + str(listTokens[currentToken][2]) + 
+                '\nDescription: () was expected after the function name')
+        
+        currentToken += 2
+        parsedStatement = functionDef
+    
     elif listTokens[currentToken][0] == KeywordTokens.PRINTF:
         currentToken += 1
         printf = Printf()

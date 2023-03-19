@@ -87,5 +87,13 @@ class IfThenElse(Statement):
     thenStatement = Statement()
     elseStatement = None
 
+class ListTail(Statement):
+    comma = ListOperand.Comma
+    list = Expression()
+
+class List(Statement):
+    head = Expression()
+    tail = ListTail()
+
 
 
