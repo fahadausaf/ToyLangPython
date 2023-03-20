@@ -17,12 +17,12 @@ def printTokens(tokenList):
         print('Line: ' + str(t[1]) + ', Col: ' + str(t[2]) + '\n')
         n += 1
 
-tokenList = lex(file_function2)
+tokenList = lex(file_function)
 printTokens(tokenList)
 
 (parseResult, currentToken) = parseStatement(0, tokenList)
-print(parseResult)
 
 
-#code = generateStatement(parseResult)
-#print(code)
+print()
+code = generateStatement(parseResult)
+print(code)

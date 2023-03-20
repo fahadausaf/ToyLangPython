@@ -160,13 +160,38 @@ def parseStatement(currentToken, listTokens):
                 '\nDescription: function name was expected after keyword function')
         
         functionDef.identifier = listTokens[currentToken][0]
-
-        if listTokens[currentToken+1][0] != ExpressionTokens.OPEN_PAREN or listTokens[currentToken+2][0] != ExpressionTokens.CLOSE_PAREN:
+        currentToken += 1
+        
+        if listTokens[currentToken][0] != ExpressionTokens.OPEN_PAREN:
             raise Exception(
                 'Line: ' + str(listTokens[currentToken][1]) + ', Col: ' + str(listTokens[currentToken][2]) + 
-                '\nDescription: () was expected after the function name')
+                '\nDescription: ( was expected after the function name')
         
-        currentToken += 2
+        currentToken += 1
+
+        # handle function parameters
+        if listTokens[currentToken][0] != ExpressionTokens.CLOSE_PAREN:
+            paramList = []
+            while(listTokens[currentToken][0] != ExpressionTokens.CLOSE_PAREN):
+                if (listTokens[currentToken][0] == ExpressionTokens.COMMA and type(listTokens[currentToken+1][0]) != VariableLiteralToken):
+                    raise Exception(
+                        'Line: ' + str(listTokens[currentToken][1]) + ', Col: ' + str(listTokens[currentToken][2]) + 
+                        '\nDescription: Input parameter name was expected after ,')
+                
+                elif (type(listTokens[currentToken][0]) == EOF):
+                    raise Exception(
+                        'Line: ' + str(listTokens[currentToken][1]) + ', Col: ' + str(listTokens[currentToken][2]) + 
+                        '\nDescription: ) was expected after function_name(')
+                
+                if (listTokens[currentToken][0] != ExpressionTokens.COMMA):
+                    paramList.append(listTokens[currentToken][0])
+                
+                currentToken += 1
+            functionDef.parameterList = paramList
+
+            
+        
+        currentToken += 1
         parsedStatement = functionDef
     
     elif listTokens[currentToken][0] == KeywordTokens.PRINTF:

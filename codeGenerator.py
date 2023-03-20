@@ -86,7 +86,17 @@ def generateStatement(statement):
         functionDef = FunctionDefinition()
         functionDef = statement
 
-        code = 'int ' + functionDef.identifier.value + '()\n{\nreturn 0;\n}'
+        code = 'int ' + functionDef.identifier.value + '('
+        
+        paramSeparator = False
+        for p in functionDef.parameterList:
+            if paramSeparator:
+                code = code + ', int ' + p.value
+            else:
+                code = code + 'int ' + p.value
+            paramSeparator = True
+        
+        code = code + ')\n{\nreturn 0;\n}'
     
     elif (type(statement) == IfThenElse):
 
