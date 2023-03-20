@@ -70,6 +70,7 @@ class DeclareCharVariable(Statement):
 class FunctionDefinition(Statement):
     identifier = None
     parameterList = None
+    functionBody = Statement()
 
 class Assignment(Statement):
     identifier = None

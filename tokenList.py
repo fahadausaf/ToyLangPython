@@ -46,6 +46,8 @@ class ExpressionTokens(Enum):
     CLOSE_PAREN = ')'
     OPEN_BRAC = '['
     CLOSE_BRAC = ']'
+    OPEN_CURLY_BRAC = '{'
+    CLOSE_CURLY_BRAC = '}'
 
 class KeywordTokens(Enum):
     INT = 'int'

@@ -150,10 +150,40 @@ def parseStatement(currentToken, listTokens):
 
         parsedStatement = declareIntVariable
 
+    elif type(listTokens[currentToken][0]) == VariableLiteralToken:
+        assign = Assignment()
+        assign.identifier = listTokens[currentToken][0]
+        currentToken += 1
+
+        print(listTokens[currentToken][0])
+
+        if listTokens[currentToken][0] != ExpressionTokens.ASSIGNMENT:
+            raise Exception(
+                'Line: ' + str(listTokens[currentToken][1]) + ', Col: ' + str(listTokens[currentToken][2]) + 
+                '\nDescription: = sign was expected after variable name')
+        
+        currentToken += 1
+
+        print(listTokens[currentToken][0])
+        
+        (assign.expression, currentToken) = parseExpression(currentToken, listTokens)
+
+        print(listTokens[currentToken][0])
+
+        if listTokens[currentToken][0] != ExpressionTokens.TERMINATOR:
+            raise Exception(
+                'Line: ' + str(listTokens[currentToken][1]) + ', Col: ' + str(listTokens[currentToken][2]) + 
+                '\nDescription: ; sign was expected after value assignment')
+        
+        print(listTokens[currentToken][0])
+        parsedStatement = assign
+
+    
     elif listTokens[currentToken][0] == KeywordTokens.FUNCTION:
         currentToken += 1
         functionDef = FunctionDefinition()
         
+        # handle function signature
         if type(listTokens[currentToken][0]) != VariableLiteralToken:
             raise Exception(
                 'Line: ' + str(listTokens[currentToken][1]) + ', Col: ' + str(listTokens[currentToken][2]) + 
@@ -188,10 +218,24 @@ def parseStatement(currentToken, listTokens):
                 
                 currentToken += 1
             functionDef.parameterList = paramList
-
-            
         
         currentToken += 1
+
+        # handle function body
+        if listTokens[currentToken][0] != ExpressionTokens.ASSIGNMENT or listTokens[currentToken+1][0] != ExpressionTokens.OPEN_CURLY_BRAC:
+            raise Exception(
+                'Line: ' + str(listTokens[currentToken][1]) + ', Col: ' + str(listTokens[currentToken][2]) + 
+                '\nDescription: ={ was expected after the function signature')
+        
+        currentToken += 2
+
+        if(listTokens[currentToken][0] != ExpressionTokens.CLOSE_CURLY_BRAC):
+            (functionDef.functionBody, currentToken)  = parseStatement(currentToken, listTokens)
+        else:
+            functionDef.functionBody = None
+            currentToken += 1
+
+        
         parsedStatement = functionDef
     
     elif listTokens[currentToken][0] == KeywordTokens.PRINTF:
@@ -254,9 +298,14 @@ def parseStatement(currentToken, listTokens):
 
     elif listTokens[currentToken][0] == KeywordTokens.ENDIF:
         return (parsedStatement, currentToken)
+    
+    elif listTokens[currentToken][0] == ExpressionTokens.CLOSE_CURLY_BRAC:
+        return (parsedStatement, currentToken)
 
     else:
-        return None
+        raise Exception(
+                'Line: ' + str(listTokens[currentToken][1]) + ', Col: ' + str(listTokens[currentToken][2]) + 
+                '\nDescription: Unrecognised Token/Syntax')
 
     if (currentToken < len(listTokens) - 1):
         currentToken += 1

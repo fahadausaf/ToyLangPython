@@ -1,1 +1,1 @@
-function myFun(a, b, c)
+function myFun(a,b,c)

@@ -133,6 +133,14 @@ def lex(fileName):
             tokenPos = colPos
             colPos += 1
             tokenList.append((ExpressionTokens.CLOSE_BRAC, linePos, tokenPos, colPos))
+        elif char == '{':
+            tokenPos = colPos
+            colPos += 1
+            tokenList.append((ExpressionTokens.OPEN_CURLY_BRAC, linePos, tokenPos, colPos))
+        elif char == '}':
+            tokenPos = colPos
+            colPos += 1
+            tokenList.append((ExpressionTokens.CLOSE_CURLY_BRAC, linePos, tokenPos, colPos))
         elif char == '/':
             tokenPos = colPos
             colPos += 1

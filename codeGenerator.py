@@ -86,17 +86,26 @@ def generateStatement(statement):
         functionDef = FunctionDefinition()
         functionDef = statement
 
+        # Handle Function Signature
         code = 'int ' + functionDef.identifier.value + '('
         
-        paramSeparator = False
-        for p in functionDef.parameterList:
-            if paramSeparator:
-                code = code + ', int ' + p.value
-            else:
-                code = code + 'int ' + p.value
-            paramSeparator = True
+        if(functionDef.parameterList):
+            paramSeparator = False
+            for p in functionDef.parameterList:
+                if paramSeparator:
+                    code = code + ', int ' + p.value
+                else:
+                    code = code + 'int ' + p.value
+                paramSeparator = True
         
-        code = code + ')\n{\nreturn 0;\n}'
+        code = code + ')\n{\n'
+
+        # Handle Function Body
+        if(functionDef.functionBody):
+            code =  code + generateStatement(functionDef.functionBody)
+
+
+        code = code + 'return 0;\n}'
     
     elif (type(statement) == IfThenElse):
 
@@ -116,7 +125,7 @@ def generateStatement(statement):
             code = statement.identifier.value + '[] = '
         else:
             code = statement.identifier.value + ' = '
-        code = code + generateExpression(statement.expression)
+        code = code + generateExpression(statement.expression) + ';\n'
 
     elif (type(statement) == NumericValue):
         code = str(statement.value)
