@@ -26,10 +26,15 @@ class LogicOperands(Enum):
     GreaterThan = '>'
     GreaterThanEqualTo = '>='
     EqualTo = '=='
-    Not = '!'
     NotEqualTo = '!='
 
-LogicOperands = Enum('LogicOperands', ['LessThan','LessThanEqualTo', 'GreaterThan', 'GreaterThanEqualTo', 'EqualTo'])
+LogicOperands = Enum('LogicOperands', ['LessThan','LessThanEqualTo', 'GreaterThan', 'GreaterThanEqualTo', 'EqualTo', 'NotEqualTo'])
+
+class UnaryOperands(Enum):
+    Not = '!'
+    Minus = '-'
+
+UnaryOperands = Enum('UnaryOperands', ['Not', 'Minus'])
 
 class EndFile(Expression):
     pass
@@ -57,15 +62,17 @@ class LogicExpression(Expression):
     operand = ArithmaticLogicOperands
     right = Expression()
 
+class UnaryExpression(Expression):
+    operand = UnaryOperands
+    expression = Expression()
+
 class DeclareIntVariable(Statement):
     identifier = None
     expression = Expression()
-    terminator = Terminator()
 
 class DeclareCharVariable(Statement):
     identifier = None
     expression = StringValue()
-    terminator = Terminator()
 
 class FunctionDefinition(Statement):
     identifier = None
@@ -75,6 +82,7 @@ class FunctionDefinition(Statement):
 class Assignment(Statement):
     identifier = None
     expression = Expression()
+    terminator = Terminator()
 
 class Printf(Statement):
     expression = Expression()

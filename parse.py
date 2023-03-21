@@ -23,9 +23,21 @@ def parseExpression(currentToken, listTokens):
         parsedExpression = strValue
         currentToken += 1
     
+    elif(listTokens[currentToken][0] == ArithmaticTokens.SUBTRACT or listTokens[currentToken][0] == LogicTokens.NOT):
+        unaryExp = UnaryExpression()
+        if listTokens[currentToken][0] == ArithmaticTokens.SUBTRACT:
+            unaryExp.operand = UnaryOperands.Minus
+        else:
+            unaryExp.operand = UnaryOperands.Not
+
+        currentToken += 1
+        (unaryExp.expression, currentToken) = parseExpression(currentToken, listTokens)
+        parsedExpression = unaryExp
+    
     else:
         raise Exception(
-            'Line: ' + str(listTokens[currentToken][1]) + ', Col: ' + str(listTokens[currentToken][2]) + '\nDescription: Expected string literal, int literal, or variable')
+            'Line: ' + str(listTokens[currentToken][1]) + ', Col: ' + str(listTokens[currentToken][2]) + 
+            '\nDescription: Expected string literal, int literal, or variable')
 
     if (currentToken == len(listTokens)):
         raise Exception('Line: ' + str(listTokens[currentToken-1][1]) + ', Col: ' + str(listTokens[currentToken-1][2]) + '\nDescription: Expected expression, got EOF instead')
@@ -155,27 +167,20 @@ def parseStatement(currentToken, listTokens):
         assign.identifier = listTokens[currentToken][0]
         currentToken += 1
 
-        print(listTokens[currentToken][0])
-
         if listTokens[currentToken][0] != ExpressionTokens.ASSIGNMENT:
             raise Exception(
                 'Line: ' + str(listTokens[currentToken][1]) + ', Col: ' + str(listTokens[currentToken][2]) + 
                 '\nDescription: = sign was expected after variable name')
         
         currentToken += 1
-
-        print(listTokens[currentToken][0])
         
         (assign.expression, currentToken) = parseExpression(currentToken, listTokens)
-
-        print(listTokens[currentToken][0])
 
         if listTokens[currentToken][0] != ExpressionTokens.TERMINATOR:
             raise Exception(
                 'Line: ' + str(listTokens[currentToken][1]) + ', Col: ' + str(listTokens[currentToken][2]) + 
                 '\nDescription: ; sign was expected after value assignment')
         
-        print(listTokens[currentToken][0])
         parsedStatement = assign
 
     

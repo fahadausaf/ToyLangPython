@@ -4,7 +4,7 @@ function symbolic(a,b,c) = {
     int z = 0;
 
     if 10 > 9 then
-        x = 2;
+        x = -2;
     else
         printf "Smaller";
     endif;

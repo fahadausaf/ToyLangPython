@@ -46,6 +46,16 @@ def generateExpression(expression):
         code = code + generateLogicOperand(expression.operand)
         code = code + generateExpression(expression.right)
 
+    if (type(expression) == UnaryExpression):
+        unaryExp = UnaryExpression()
+        unaryExp = expression
+
+        if unaryExp.operand == UnaryOperands.Minus:
+            code = code + '-'
+        else:
+            code = code + '!'
+
+        code = code + generateExpression(unaryExp.expression)
     return code
 
 def generateStatement(statement):
@@ -64,7 +74,7 @@ def generateStatement(statement):
         assign.identifier = declare.identifier
         assign.expression = declare.expression
 
-        code = 'char ' + generateStatement(assign) + generateStatement(declare.terminator)
+        code = 'char ' + generateStatement(assign) #+ generateStatement(declare.terminator)
     
     elif (type(statement) == DeclareIntVariable):
         declare = DeclareIntVariable()
@@ -76,10 +86,11 @@ def generateStatement(statement):
 
         if (type(declare.expression) == NumericValue or 
             type(declare.expression) == ArithmaticExpression or
-            type(declare.expression) == LogicExpression):
+            type(declare.expression) == LogicExpression or
+            type(declare.expression) == UnaryExpression):
             code = 'int '
             code = code + generateStatement(assign)
-            code = code + generateStatement(declare.terminator)
+            #code = code + generateStatement(declare.terminator)
 
     elif (type(statement) == FunctionDefinition):
 
@@ -105,7 +116,7 @@ def generateStatement(statement):
             code =  code + generateStatement(functionDef.functionBody)
 
 
-        code = code + 'return 0;\n}'
+        code = code + '\nreturn 0;\n}'
     
     elif (type(statement) == IfThenElse):
 
@@ -125,7 +136,8 @@ def generateStatement(statement):
             code = statement.identifier.value + '[] = '
         else:
             code = statement.identifier.value + ' = '
-        code = code + generateExpression(statement.expression) + ';\n'
+        code = code + generateExpression(statement.expression)
+        code = code + generateStatement(statement.terminator)
 
     elif (type(statement) == NumericValue):
         code = str(statement.value)
