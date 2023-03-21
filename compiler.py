@@ -11,7 +11,33 @@ def printTokens(tokenList):
         print('Line: ' + str(t[1]) + ', Col: ' + str(t[2]) + '\n')
         n += 1
 
+def prettyPrint(code):
+    newCode = ''
+    noOfBrac = 0
+    tab = False
+    for line in code.splitlines():
+        tmpTab = ''
+        newLine = ''
+        
+        if(line == '}'):
+            noOfBrac -= 1
+            if noOfBrac == 0:
+                tab = False   
+        
+        if tab:
+            for x in range(noOfBrac):
+                tmpTab = tmpTab + '\t'
+        newLine = tmpTab + line + '\n'
+        
+        
+        if(line == '{'):
+            noOfBrac += 1
+            tab = True
+        
 
+        newCode = newCode + newLine
+
+    return newCode
 
 file_test_01 = 'input\\test_lex\\test_01_int_01.d'
 file_printf = 'input\\print.d'
@@ -32,4 +58,4 @@ tokenList = lex(file_symbolic)
 (parseResult, currentToken) = parseStatement(0, tokenList)
 
 code = generateStatement(parseResult)
-print(code)
+print(prettyPrint(code))
