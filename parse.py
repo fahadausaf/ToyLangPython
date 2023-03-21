@@ -281,9 +281,7 @@ def parseStatement(currentToken, listTokens):
                 '\nDescription: then keyword was expected after if-condition')
         
         currentToken += 1
-        print(listTokens[currentToken][0])
         (ifThenElse.thenStatement, currentToken)  = parseStatement(currentToken, listTokens)
-        print(listTokens[currentToken][0])
 
         # set the statement.right to None if there is no code
         if(type(ifThenElse.thenStatement.right) == Statement):
@@ -299,16 +297,14 @@ def parseStatement(currentToken, listTokens):
                 'Line: ' + str(listTokens[currentToken][1]) + ', Col: ' + str(listTokens[currentToken][2]) + 
                 '\nDescription: endif keyword was expected after then/else expression')
         
-        print("HERE")
         currentToken += 1
-        print(listTokens[currentToken][0])
         if listTokens[currentToken][0] != ExpressionTokens.TERMINATOR:
             raise Exception(
                 'Line: ' + str(listTokens[currentToken][1]) + ', Col: ' + str(listTokens[currentToken][2]) + 
                 '\nDescription: ; sign was expected after printf expression')
         
         #currentToken += 1
-        print("OVER HERE")
+
         parsedStatement = ifThenElse
 
     elif type(listTokens[currentToken][0]) == EOF:

@@ -3,6 +3,7 @@ from parse import *
 from codeGenerator import *
 from tokenList import *
 from helper import *
+from symbolic import *
 
 
 
@@ -21,10 +22,27 @@ file_logical = 'input\\logicals.d'
 
 
 tokenList = lex(file_symbolic)
-printTokens(tokenList)
-
 parseResult, currentToken = parseStatement(0, tokenList)
-
 code = generateStatement(parseResult)
 print()
 print(prettyPrint(code))
+
+print(parseResult)
+print(parseResult.left)
+print(parseResult.left.parameterList)
+funBody = parseResult.left.functionBody
+print('Function Body')
+print(funBody)
+print(funBody.left)
+print(funBody.left.identifier.value)
+print(funBody.left.expression)
+
+print(funBody.right)
+print("**********")
+
+
+paramList, varList, dependencyList = symbolicExecution(parseResult)
+
+print(paramList)
+print(varList)
+print(dependencyList)

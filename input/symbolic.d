@@ -1,7 +1,7 @@
 function symbolic(a,b,c) = {
     int x = 0;
     int y = 0;
-    int z = 0;
+    int z = 0 + c;
 
     if a then
         x = -2;
