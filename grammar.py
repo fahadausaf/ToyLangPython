@@ -27,8 +27,9 @@ class LogicOperands(Enum):
     GreaterThanEqualTo = '>='
     EqualTo = '=='
     NotEqualTo = '!='
+    And = '&'
 
-LogicOperands = Enum('LogicOperands', ['LessThan','LessThanEqualTo', 'GreaterThan', 'GreaterThanEqualTo', 'EqualTo', 'NotEqualTo'])
+LogicOperands = Enum('LogicOperands', ['LessThan','LessThanEqualTo', 'GreaterThan', 'GreaterThanEqualTo', 'EqualTo', 'NotEqualTo', 'And'])
 
 class UnaryOperands(Enum):
     Not = '!'

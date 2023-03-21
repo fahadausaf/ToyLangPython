@@ -44,7 +44,7 @@ def parseExpression(currentToken, listTokens):
     else:
         raise Exception(
             'Line: ' + str(listTokens[currentToken][1]) + ', Col: ' + str(listTokens[currentToken][2]) + 
-            '\nDescription: Expected string literal, int literal, or variable')
+            '\nDescription: Expected string literal, int literal, variable')
 
     if (currentToken == len(listTokens)):
         raise Exception('Line: ' + str(listTokens[currentToken-1][1]) + ', Col: ' + str(listTokens[currentToken-1][2]) + '\nDescription: Expected expression, got EOF instead')
@@ -75,7 +75,9 @@ def parseExpression(currentToken, listTokens):
                 listTokens[currentToken][0] == LogicTokens.LESS_THAN_EQUAL_TO or
                 listTokens[currentToken][0] == LogicTokens.GREATER_THAN or
                 listTokens[currentToken][0] == LogicTokens.GREATER_THAN_EQUAL_TO or
-                listTokens[currentToken][0] == LogicTokens.EQUAL_TO):
+                listTokens[currentToken][0] == LogicTokens.EQUAL_TO or
+                listTokens[currentToken][0] == LogicTokens.NOT_EQUAL_TO or 
+                listTokens[currentToken][0] == LogicTokens.AND):
             
             logicExpression = LogicExpression()
             logicExpression.left = parsedExpression
@@ -89,6 +91,10 @@ def parseExpression(currentToken, listTokens):
                 logicExpression.operand = LogicOperands.GreaterThanEqualTo
             elif listTokens[currentToken][0] == LogicTokens.EQUAL_TO:
                 logicExpression.operand = LogicOperands.EqualTo
+            elif listTokens[currentToken][0] == LogicTokens.NOT_EQUAL_TO:
+                logicExpression.operand = LogicOperands.NotEqualTo
+            elif listTokens[currentToken][0] == LogicTokens.AND:
+                logicExpression.operand = LogicOperands.And
 
             currentToken += 1
             (logicExpression.right, currentToken) = parseExpression(
@@ -189,8 +195,7 @@ def parseStatement(currentToken, listTokens):
                 '\nDescription: ; sign was expected after value assignment')
         
         parsedStatement = assign
-
-    
+ 
     elif listTokens[currentToken][0] == KeywordTokens.FUNCTION:
         currentToken += 1
         functionDef = FunctionDefinition()
@@ -276,7 +281,9 @@ def parseStatement(currentToken, listTokens):
                 '\nDescription: then keyword was expected after if-condition')
         
         currentToken += 1
+        print(listTokens[currentToken][0])
         (ifThenElse.thenStatement, currentToken)  = parseStatement(currentToken, listTokens)
+        print(listTokens[currentToken][0])
 
         # set the statement.right to None if there is no code
         if(type(ifThenElse.thenStatement.right) == Statement):
@@ -292,13 +299,16 @@ def parseStatement(currentToken, listTokens):
                 'Line: ' + str(listTokens[currentToken][1]) + ', Col: ' + str(listTokens[currentToken][2]) + 
                 '\nDescription: endif keyword was expected after then/else expression')
         
+        print("HERE")
         currentToken += 1
+        print(listTokens[currentToken][0])
         if listTokens[currentToken][0] != ExpressionTokens.TERMINATOR:
             raise Exception(
                 'Line: ' + str(listTokens[currentToken][1]) + ', Col: ' + str(listTokens[currentToken][2]) + 
                 '\nDescription: ; sign was expected after printf expression')
         
-        currentToken += 1
+        #currentToken += 1
+        print("OVER HERE")
         parsedStatement = ifThenElse
 
     elif type(listTokens[currentToken][0]) == EOF:

@@ -37,6 +37,7 @@ class LogicTokens(Enum):
     LESS_THAN_EQUAL_TO = '<='
     GREATER_THAN = '>'
     GREATER_THAN_EQUAL_TO = '>='
+    AND = '&'
 
 class ExpressionTokens(Enum):
     TERMINATOR = ';'

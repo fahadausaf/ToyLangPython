@@ -121,6 +121,21 @@ def lex(fileName):
                 file.seek(file.tell()-1)
                 colPos -= 1
                 tokenList.append((LogicTokens.GREATER_THAN, linePos, tokenPos, colPos))
+        elif char == '!':
+            tokenPos = colPos
+            colPos += 1
+            char = file.read(1)
+            colPos += 1
+            if char == '=':
+                tokenList.append((LogicTokens.NOT_EQUAL_TO, linePos, tokenPos, colPos))
+            else:
+                file.seek(file.tell()-1)
+                colPos -= 1
+                tokenList.append((LogicTokens.NOT, linePos, tokenPos, colPos))
+        elif char == '&':
+            tokenPos = colPos
+            colPos += 1
+            tokenList.append((LogicTokens.AND, linePos, tokenPos, colPos))
         elif char == ',':
             tokenPos = colPos
             colPos += 1

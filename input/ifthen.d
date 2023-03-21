@@ -1,5 +1,3 @@
-if 10 > 9 then
-	printf "Bigger";
-else
-	printf "Smaller";
+if !a & c then
+	y = 1;
 endif;

@@ -22,6 +22,10 @@ def generateLogicOperand(operand):
         return ' >= '
     elif (operand == LogicOperands.EqualTo):
         return ' == '
+    elif (operand == LogicOperands.NotEqualTo):
+        return ' != '
+    elif (operand == LogicOperands.And):
+        return ' && '
 
 def generateExpression(expression):
     code = ''
