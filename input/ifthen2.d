@@ -1,3 +1,3 @@
-if 10 > 9 then
+if a == 1 then
 	printf "Bigger";
 endif;

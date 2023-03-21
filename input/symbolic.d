@@ -3,7 +3,7 @@ function symbolic(a,b,c) = {
     int y = 0;
     int z = 0;
 
-    if 10 > 9 then
+    if a == 1 then
         x = -2;
     else
         printf "Smaller";

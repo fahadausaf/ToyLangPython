@@ -35,6 +35,9 @@ def generateExpression(expression):
         strValue = StringValue()
         strValue.value = expression.value
         code = code + generateStatement(strValue)
+    
+    elif (type(expression) == VariableExpression):
+        code = code + expression.identifier
 
     elif (type(expression) == ArithmaticExpression):
         code = generateExpression(expression.left)
@@ -46,7 +49,7 @@ def generateExpression(expression):
         code = code + generateLogicOperand(expression.operand)
         code = code + generateExpression(expression.right)
 
-    if (type(expression) == UnaryExpression):
+    elif (type(expression) == UnaryExpression):
         unaryExp = UnaryExpression()
         unaryExp = expression
 
@@ -116,14 +119,14 @@ def generateStatement(statement):
             code =  code + generateStatement(functionDef.functionBody)
 
 
-        code = code + '\nreturn 0;\n}'
+        code = code + '\n\nreturn 0;\n}'
     
     elif (type(statement) == IfThenElse):
 
         ifThenElse = IfThenElse()
         ifThenElse = statement
 
-        code = 'if (' + generateExpression(ifThenElse.ifCondition) + ')\n{\n'
+        code = '\nif (' + generateExpression(ifThenElse.ifCondition) + ')\n{\n'
         code = code + generateStatement(ifThenElse.thenStatement) + '}\n'
         if (ifThenElse.elseStatement != None):
             code = code + 'else\n{\n' + generateStatement(ifThenElse.elseStatement) + '}'

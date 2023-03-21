@@ -52,6 +52,9 @@ class StringValue(Expression):
 class AlphaNumericValue(Expression):
     value = None
 
+class VariableExpression(Expression):
+    identifier = None
+
 class ArithmaticExpression(Expression):
     left = Expression()
     operand = ArithmaticLogicOperands
@@ -93,7 +96,7 @@ class StatementSequence(Statement):
     right = Statement()
 
 class IfThenElse(Statement):
-    ifCondition = LogicExpression()
+    ifCondition = Expression()
     thenStatement = Statement()
     elseStatement = None
 

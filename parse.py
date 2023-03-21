@@ -9,6 +9,7 @@ def parseExpression(currentToken, listTokens):
 
     parsedExpression = Expression()
 
+    print(type(listTokens[currentToken][0]))
     if (type(listTokens[currentToken][0]) == NumericLiteralToken):
         numLiteral = listTokens[currentToken][0]
         numericValue = NumericValue()
@@ -34,6 +35,14 @@ def parseExpression(currentToken, listTokens):
         (unaryExp.expression, currentToken) = parseExpression(currentToken, listTokens)
         parsedExpression = unaryExp
     
+    elif(type(listTokens[currentToken][0]) == VariableLiteralToken):
+        print('Variable found')
+        varExpr = VariableExpression()
+        varExpr.identifier = listTokens[currentToken][0].value
+        currentToken += 1
+        parsedExpression = varExpr
+        
+
     else:
         raise Exception(
             'Line: ' + str(listTokens[currentToken][1]) + ', Col: ' + str(listTokens[currentToken][2]) + 
