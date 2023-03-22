@@ -27,22 +27,54 @@ code = generateStatement(parseResult)
 print()
 print(prettyPrint(code))
 
-print(parseResult)
-print(parseResult.left)
-print(parseResult.left.parameterList)
-funBody = parseResult.left.functionBody
-print('Function Body')
-print(funBody)
-print(funBody.left)
-print(funBody.left.identifier.value)
-print(funBody.left.expression)
+# print(parseResult)
+# print(parseResult.left)
+# print(parseResult.left.parameterList)
+# funBody = parseResult.left.functionBody
+# print('Function Body')
+# print(funBody)
+# print(funBody.left)
+# print(funBody.left.identifier.value)
+# print(funBody.left.expression)
 
-print(funBody.right)
-print("**********")
+# print(funBody.right)
+# print(funBody.right.left)
+# print(funBody.right.right)
+# print(funBody.right.right.left)
+# print(funBody.right.right.right)
+# print('FIRST: If-Then-Else')
+# print(funBody.right.right.right.left)
+
+# print('Remaining Statement')
+# print(funBody.right.right.right.right)
+# print('SECOND: If-Then-Else')
+# print(funBody.right.right.right.right.left)
+# print(funBody.right.right.right.right.right)
+# print('THIRD: If-Then-Else')
+# print(funBody.right.right.right.right.right.left)
+# print(funBody.right.right.right.right.right.right)
+# print("**********")
 
 
-paramList, varList, dependencyList = symbolicExecution(parseResult)
+paramList, varList, executionTree = symbolicExecution(parseResult)
 
-print(paramList)
-print(varList)
-print(dependencyList)
+# print('Input parameters:\t' + str(paramList))
+# print('Internal variables:\t' + str(varList))
+# print('Dependent variables:\t' + str(dependencyList))
+
+print('********************')
+print(executionTree)
+print(executionTree.constraints)
+print(executionTree.variables)
+
+
+left = ExecutionTree('Z', 'xyz')
+right = ExecutionTree('!(Z)', 'xyz')
+
+executionTree.insert(left, right)
+
+print(executionTree.left.constraints)
+print(executionTree.left.variables)
+print(executionTree.right.constraints)
+print(executionTree.right.variables)
+
