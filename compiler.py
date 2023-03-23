@@ -9,7 +9,7 @@ from symbolic import *
 
 file_test_01 = 'input\\test_lex\\test_01_int_01.d'
 file_printf = 'input\\print.d'
-file_ifThenElse = 'input\\ifthen.d'
+file_ifThenElse = 'input\\ifthen3.d'
 file_function = 'input\\function.d'
 file_function2 = 'input\\function2.d'
 file_function3 = 'input\\function3.d'
@@ -21,60 +21,48 @@ file_logical = 'input\\logicals.d'
 
 
 
-tokenList = lex(file_symbolic)
-parseResult, currentToken = parseStatement(0, tokenList)
+tokenList = lex(file_ifThenElse)
+parseResult, _ = parseStatement(0, tokenList)
 code = generateStatement(parseResult)
 print()
 print(prettyPrint(code))
-
-# print(parseResult)
-# print(parseResult.left)
-# print(parseResult.left.parameterList)
-# funBody = parseResult.left.functionBody
-# print('Function Body')
-# print(funBody)
-# print(funBody.left)
-# print(funBody.left.identifier.value)
-# print(funBody.left.expression)
-
-# print(funBody.right)
-# print(funBody.right.left)
-# print(funBody.right.right)
-# print(funBody.right.right.left)
-# print(funBody.right.right.right)
-# print('FIRST: If-Then-Else')
-# print(funBody.right.right.right.left)
-
-# print('Remaining Statement')
-# print(funBody.right.right.right.right)
-# print('SECOND: If-Then-Else')
-# print(funBody.right.right.right.right.left)
-# print(funBody.right.right.right.right.right)
-# print('THIRD: If-Then-Else')
-# print(funBody.right.right.right.right.right.left)
-# print(funBody.right.right.right.right.right.right)
-# print("**********")
+print()
+print(parseResult)
+print(parseResult.left)
+print(parseResult.right)
+print()
+print(parseResult.right.left)
+print(parseResult.right.right)
+print()
+# if-then-else
+print(parseResult.right.right.left)
+print(parseResult.right.right.right)
+print()
+# print(parseResult.right.right.right.left)
+# print(parseResult.right.right.right.right)
 
 
-paramList, varList, executionTree = symbolicExecution(parseResult)
 
-# print('Input parameters:\t' + str(paramList))
-# print('Internal variables:\t' + str(varList))
-# print('Dependent variables:\t' + str(dependencyList))
+print('\nSymbolic Execution\n')
+et = symbolicExecution(parseResult)
 
-print('********************')
-print(executionTree)
-print(executionTree.constraints)
-print(executionTree.variables)
+print(et)
+print(et.expression)
+print('Left: ' + str(et.left))
+print('Right: ' + str(et.right))
+print()
+print(et.right.variables)
+print(et.right.expression)
+print('Left: ' + str(et.right.left))
+print('Right: ' + str(et.right.right))
 
 
-left = ExecutionTree('Z', 'xyz')
-right = ExecutionTree('!(Z)', 'xyz')
+# printf "Test Program";
+# int a = 0;
+# if 10 > 9 then
+# 	a = 2;
+# else
+# 	printf "Smaller";
+# endif;
 
-executionTree.insert(left, right)
-
-print(executionTree.left.constraints)
-print(executionTree.left.variables)
-print(executionTree.right.constraints)
-print(executionTree.right.variables)
-
+# printf "End of program";

@@ -2,12 +2,13 @@ from abc import ABC
 from grammar import *
 from codeGenerator import *
 
-class ExecutionTree:
-    def __init__(self, constraints, variables):
+class ExecutionTreeNode:
+    def __init__(self, constraints, variables, expression):
         self.left = None
         self.right = None
         self.constraints = constraints
         self.variables = variables
+        self.expression = expression
     
     def insert(self, left, right):
         if self.left is None:
@@ -20,83 +21,67 @@ class ExecutionTree:
         else:
             self.right.insert(left, right)
 
-executionTree = None
-
-def symbolicExecution(statement, paramList = [], varList = []):
-    global executionTree
-
-    if executionTree is None:
-            executionTree = ExecutionTree(None, None)
+def symbolicExecution(statement, exTree = None):
 
     if (type(statement) == StatementSequence):
-        paramList, varList, leftSubTree = symbolicExecution(statement.left, paramList, varList)
-
-        # if leftSubTree:
-        #     if(executionTree == None):
-        #         executionTree = leftSubTree
         
-        paramList, varList, rightSubTree = symbolicExecution(statement.right, paramList, varList)
+        left = symbolicExecution(statement.left)
+        right = symbolicExecution(statement.right)
 
-        # if rightSubTree:
-        #     if(executionTree == None):
-        #         executionTree = rightSubTree
+        if(type(statement.left) == IfThenElse):
+            left.left.right = right
+            left.right.right = right
+        else:
+            left.right = right
+
+        return left
     
     elif (type(statement) == FunctionDefinition):
 
         functionDef = FunctionDefinition()
         functionDef = statement
 
-        # get all the input parameters from the function signature
-        for p in functionDef.parameterList:
-            paramList.append(p.value)
 
         # process function body
         if(functionDef.functionBody):
-            paramList, varList, _ = symbolicExecution(functionDef.functionBody, paramList, varList)
+            _ = symbolicExecution(functionDef.functionBody, exTree)
     
     elif (type(statement) == DeclareIntVariable):
-
         declare = DeclareIntVariable()
         declare = statement
         value = generateExpression(declare.expression)
-        varList.append((declare.identifier.value, value))
-
-        # check variable dependency
+        return ExecutionTreeNode(None, (declare.identifier.value, value), 'declare int')
 
     elif (type(statement) == IfThenElse):
-        print('If-Block')
-        ifThenElse = statement
-        constraints = generateExpression(ifThenElse.ifCondition)
-        print(constraints)
-        print(ifThenElse.thenStatement)
-        print(ifThenElse.elseStatement)
-
-        print('Input parameters:\t' + str(paramList))
-        print('Internal variables:\t' + str(varList))
-        print('--------------------')
-
-
-        left = ExecutionTree(str(constraints), str(varList))
-        right = ExecutionTree(str('!(' + constraints + ')'), str(varList))
+        constraints = generateExpression(statement.ifCondition)
         
-        if executionTree == None:
-            executionTree = ExecutionTree(None, None)
-            executionTree.left = left
-            executionTree.right = right
-        else:
-            print('\nExecution tree exist. Append node to all terminals')
-            
-            executionTree.insert(left, right)
-            print('Done Insertion')
+        trueBranch = ExecutionTreeNode(str(constraints), None, 'True-Branch')
+        #trueBranch.right = symbolicExecution(statement.thenStatement)
 
+        falseBranch = ExecutionTreeNode('!(' + str(constraints) + ')', None, 'False-Branch')
+        #falseBranch.right = symbolicExecution(statement.elseStatement)
+        
+        ifThenNode = ExecutionTreeNode(None, None, 'If-Then-Else')
+        ifThenNode.left = trueBranch
+        ifThenNode.right = falseBranch
+
+        return ifThenNode
+
+
+    elif (type(statement) == Printf):
+        node = ExecutionTreeNode(None, None, 'printf')
+        return node
     
     elif (type(statement) == Statement):
-        None
+        return None
     elif (type(statement) == EndFile):
-        None
+        if exTree is None:
+            return None
+        else:
+            return exTree
     else:
         print('Unknown Statement')
         print(type(statement))
 
 
-    return paramList, varList, executionTree
+    return None

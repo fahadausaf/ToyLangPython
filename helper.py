@@ -39,3 +39,17 @@ def prettyPrint(code):
         newCode = newCode + newLine
 
     return newCode
+
+def parseExecutionTree(node, exprlst = ''):
+    
+    if(exprlst == ''):
+        exprlst = node.expression
+    else:
+        exprlst = exprlst + ', ' + node.expression
+        
+    if (node.left == None and node.right == None):
+        print(exprlst)
+    if node.left != None:
+        parseExecutionTree(node.left, exprlst)
+    if node.right != None:
+        parseExecutionTree(node.right, exprlst)
