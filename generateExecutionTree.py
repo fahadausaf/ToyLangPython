@@ -9,28 +9,27 @@ class ExecutionTreeNode:
         self.constraints = constraints
         self.variables = variables
         self.expression = expression
-    
-    def insert(self, left, right):
-        if self.left is None:
-            self.left = left
-        else:
-            self.left.insert(left, right)
 
-        if self.right is None:
-            self.right = right
-        else:
-            self.right.insert(left, right)
+def insertNode(head, node):
+    if head.left and head.right:
+        insertNode(head.left, node)
+        insertNode(head.right, node)
+    elif not head.left and head.right:
+        insertNode(head.right, node)
+    elif not head.left and not head.right:
+        head.right = node
 
 def symbolicExecution(statement, exTree = None):
 
     if (type(statement) == StatementSequence):
-        
         left = symbolicExecution(statement.left)
-        right = symbolicExecution(statement.right)
+        if statement.right is None:
+            right = None
+        else:
+            right = symbolicExecution(statement.right)
 
         if(type(statement.left) == IfThenElse):
-            left.left.right = right
-            left.right.right = right
+            insertNode(left, right)
         else:
             left.right = right
 
@@ -50,16 +49,32 @@ def symbolicExecution(statement, exTree = None):
         declare = DeclareIntVariable()
         declare = statement
         value = generateExpression(declare.expression)
-        return ExecutionTreeNode(None, (declare.identifier.value, value), 'declare int')
+        return ExecutionTreeNode(None, (declare.identifier.value, value), 'Declare Int')
+    
+    elif (type(statement) == DeclareCharVariable):
+        declare = DeclareCharVariable()
+        declare = statement
+        value = generateExpression(declare.expression)
+        return ExecutionTreeNode(None, (declare.identifier.value, value), 'Declare Char')
 
     elif (type(statement) == IfThenElse):
-        constraints = generateExpression(statement.ifCondition)
+        ifThenElse = IfThenElse()
+        ifThenElse = statement
+
+        constraints = generateExpression(ifThenElse.ifCondition)
+        
+        thenBody = symbolicExecution(ifThenElse.thenStatement)
+
+        if ifThenElse.elseStatement is None:
+            elseBody = None
+        else:
+            elseBody = symbolicExecution(ifThenElse.elseStatement)
         
         trueBranch = ExecutionTreeNode(str(constraints), None, 'True-Branch')
-        #trueBranch.right = symbolicExecution(statement.thenStatement)
+        trueBranch.right = thenBody
 
         falseBranch = ExecutionTreeNode('!(' + str(constraints) + ')', None, 'False-Branch')
-        #falseBranch.right = symbolicExecution(statement.elseStatement)
+        falseBranch.right = elseBody
         
         ifThenNode = ExecutionTreeNode(None, None, 'If-Then-Else')
         ifThenNode.left = trueBranch
@@ -69,7 +84,11 @@ def symbolicExecution(statement, exTree = None):
 
 
     elif (type(statement) == Printf):
-        node = ExecutionTreeNode(None, None, 'printf')
+        node = ExecutionTreeNode(None, None, 'Print')
+        return node
+    
+    elif (type(statement) == Assignment):
+        node = ExecutionTreeNode(None, None, 'Assignment')
         return node
     
     elif (type(statement) == Statement):
@@ -82,6 +101,7 @@ def symbolicExecution(statement, exTree = None):
     else:
         print('Unknown Statement')
         print(type(statement))
+        return None
 
 
     return None

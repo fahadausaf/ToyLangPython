@@ -3,7 +3,7 @@ from parse import *
 from codeGenerator import *
 from tokenList import *
 from helper import *
-from symbolic import *
+from generateExecutionTree import *
 
 
 
@@ -27,42 +27,8 @@ code = generateStatement(parseResult)
 print()
 print(prettyPrint(code))
 print()
-print(parseResult)
-print(parseResult.left)
-print(parseResult.right)
-print()
-print(parseResult.right.left)
-print(parseResult.right.right)
-print()
-# if-then-else
-print(parseResult.right.right.left)
-print(parseResult.right.right.right)
-print()
-# print(parseResult.right.right.right.left)
-# print(parseResult.right.right.right.right)
-
 
 
 print('\nSymbolic Execution\n')
 et = symbolicExecution(parseResult)
-
-print(et)
-print(et.expression)
-print('Left: ' + str(et.left))
-print('Right: ' + str(et.right))
-print()
-print(et.right.variables)
-print(et.right.expression)
-print('Left: ' + str(et.right.left))
-print('Right: ' + str(et.right.right))
-
-
-# printf "Test Program";
-# int a = 0;
-# if 10 > 9 then
-# 	a = 2;
-# else
-# 	printf "Smaller";
-# endif;
-
-# printf "End of program";
+parseExecutionTree(et)

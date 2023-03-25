@@ -301,7 +301,7 @@ def parseStatement(currentToken, listTokens):
         if listTokens[currentToken][0] != ExpressionTokens.TERMINATOR:
             raise Exception(
                 'Line: ' + str(listTokens[currentToken][1]) + ', Col: ' + str(listTokens[currentToken][2]) + 
-                '\nDescription: ; sign was expected after printf expression')
+                '\nDescription: ; sign was expected after endif')
         
         #currentToken += 1
 
