@@ -10,6 +10,8 @@ function symbolic(a,b,c) = {
     if b > 5 then
         if !a & c then
 			y = 1;
+        else
+            y = 78;
 		endif;
 		z = 2;
     endif;

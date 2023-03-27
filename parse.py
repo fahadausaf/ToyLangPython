@@ -273,7 +273,7 @@ def parseStatement(currentToken, listTokens):
 
         currentToken += 1
         ifThenElse = IfThenElse()
-        (ifThenElse.ifCondition, currentToken) = parseExpression(currentToken, listTokens)
+        ifThenElse.ifCondition, currentToken = parseExpression(currentToken, listTokens)
 
         if listTokens[currentToken][0] != KeywordTokens.THEN:
             raise Exception(
@@ -281,11 +281,12 @@ def parseStatement(currentToken, listTokens):
                 '\nDescription: then keyword was expected after if-condition')
         
         currentToken += 1
-        (ifThenElse.thenStatement, currentToken)  = parseStatement(currentToken, listTokens)
+        ifThenElse.thenStatement, currentToken  = parseStatement(currentToken, listTokens)
 
         # set the statement.right to None if there is no code
         if(type(ifThenElse.thenStatement.right) == Statement):
             ifThenElse.thenStatement.right = None
+
 
         # if current token is not ENDIF then this is an ELSE block
         if listTokens[currentToken][0] != KeywordTokens.ENDIF:

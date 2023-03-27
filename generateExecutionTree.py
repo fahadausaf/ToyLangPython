@@ -10,7 +10,7 @@ class ExecutionTreeNode:
         self.variables = variables
         self.expression = expression
 
-def insertNode(head, node):
+def insertNode_old(head, node):
     if head.left and head.right:
         insertNode(head.left, node)
         insertNode(head.right, node)
@@ -19,10 +19,23 @@ def insertNode(head, node):
     elif not head.left and not head.right:
         head.right = node
 
+def insertNode(head, node):
+    if head.left:
+        insertNode(head.left, node)
+    if head.right:
+        insertNode(head.right, node)
+    else:
+        if node:
+            newNode = ExecutionTreeNode(node.constraints, node.variables, node.expression)
+            newNode.left = node.left
+            newNode.right = node.right
+            head.right = newNode
+
 def symbolicExecution(statement, exTree = None):
 
     if (type(statement) == StatementSequence):
         left = symbolicExecution(statement.left)
+
         if statement.right is None:
             right = None
         else:
@@ -31,19 +44,22 @@ def symbolicExecution(statement, exTree = None):
         if(type(statement.left) == IfThenElse):
             insertNode(left, right)
         else:
-            left.right = right
+            if left.right is None:
+                left.right = right
 
         return left
     
     elif (type(statement) == FunctionDefinition):
-
+        # print('Function Body Found')
         functionDef = FunctionDefinition()
         functionDef = statement
 
-
+        funBody = ExecutionTreeNode(None, None, 'Function Declaration')
         # process function body
         if(functionDef.functionBody):
-            _ = symbolicExecution(functionDef.functionBody, exTree)
+            funBody.right = symbolicExecution(functionDef.functionBody)
+
+        return funBody
     
     elif (type(statement) == DeclareIntVariable):
         declare = DeclareIntVariable()
@@ -82,7 +98,6 @@ def symbolicExecution(statement, exTree = None):
 
         return ifThenNode
 
-
     elif (type(statement) == Printf):
         node = ExecutionTreeNode(None, None, 'Print')
         return node
@@ -93,15 +108,16 @@ def symbolicExecution(statement, exTree = None):
     
     elif (type(statement) == Statement):
         return None
+    
     elif (type(statement) == EndFile):
         if exTree is None:
             return None
         else:
             return exTree
+    
     else:
         print('Unknown Statement')
         print(type(statement))
         return None
-
 
     return None
