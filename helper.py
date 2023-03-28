@@ -47,9 +47,24 @@ def parseExecutionTree(node, exprlst = ''):
     else:
         exprlst = exprlst + ', ' + node.expression
         
-    if (node.left == None and node.right == None):
+    if (not node.left and not node.right):
         print(exprlst)
-    if node.left != None:
+    if node.left:
         parseExecutionTree(node.left, exprlst)
-    if node.right != None:
+    if node.right:
         parseExecutionTree(node.right, exprlst)
+
+def getConstraints(node, constlst = ''):
+    
+    if node.constraints:
+        if(constlst == ''):
+            constlst = node.constraints
+        else:
+            constlst = constlst + ', ' + node.constraints
+        
+    if (not node.left and not node.right):
+        print(constlst)
+    if node.left:
+        getConstraints(node.left, constlst)
+    if node.right:
+        getConstraints(node.right, constlst)

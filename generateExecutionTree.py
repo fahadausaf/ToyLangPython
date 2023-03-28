@@ -10,15 +10,6 @@ class ExecutionTreeNode:
         self.variables = variables
         self.expression = expression
 
-def insertNode_old(head, node):
-    if head.left and head.right:
-        insertNode(head.left, node)
-        insertNode(head.right, node)
-    elif not head.left and head.right:
-        insertNode(head.right, node)
-    elif not head.left and not head.right:
-        head.right = node
-
 def insertNode(head, node):
     if head.left:
         insertNode(head.left, node)
@@ -31,15 +22,15 @@ def insertNode(head, node):
             newNode.right = node.right
             head.right = newNode
 
-def symbolicExecution(statement, exTree = None):
+def getExecutionTree(statement, exTree = None):
 
     if (type(statement) == StatementSequence):
-        left = symbolicExecution(statement.left)
+        left = getExecutionTree(statement.left)
 
         if statement.right is None:
             right = None
         else:
-            right = symbolicExecution(statement.right)
+            right = getExecutionTree(statement.right)
 
         if(type(statement.left) == IfThenElse):
             insertNode(left, right)
@@ -57,7 +48,7 @@ def symbolicExecution(statement, exTree = None):
         funBody = ExecutionTreeNode(None, None, 'Function Declaration')
         # process function body
         if(functionDef.functionBody):
-            funBody.right = symbolicExecution(functionDef.functionBody)
+            funBody.right = getExecutionTree(functionDef.functionBody)
 
         return funBody
     
@@ -79,12 +70,12 @@ def symbolicExecution(statement, exTree = None):
 
         constraints = generateExpression(ifThenElse.ifCondition)
         
-        thenBody = symbolicExecution(ifThenElse.thenStatement)
+        thenBody = getExecutionTree(ifThenElse.thenStatement)
 
         if ifThenElse.elseStatement is None:
             elseBody = None
         else:
-            elseBody = symbolicExecution(ifThenElse.elseStatement)
+            elseBody = getExecutionTree(ifThenElse.elseStatement)
         
         trueBranch = ExecutionTreeNode(str(constraints), None, 'True-Branch')
         trueBranch.right = thenBody

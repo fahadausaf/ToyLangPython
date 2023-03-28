@@ -47,9 +47,10 @@ print()
 
 
 print('\nSymbolic Execution\n')
-et = symbolicExecution(parseResult)
+et = getExecutionTree(parseResult)
 parseExecutionTree(et)
-
+print()
+getConstraints(et)
 
 
 
