@@ -1,3 +1,5 @@
+from datetime import datetime
+
 class Enumm(set):
     def __getattr__(self, name):
         if name in self:
@@ -13,7 +15,7 @@ def printTokens(tokenList):
         n += 1
 
 def prettyPrint(code):
-    newCode = ''
+    newCode = '\n'
     noOfBrac = 0
     tab = False
     for line in code.splitlines():
@@ -40,22 +42,30 @@ def prettyPrint(code):
 
     return newCode
 
+
+path_no = 0
 def parseExecutionTree(node, exprlst = ''):
-    
+    global path_no
     if(exprlst == ''):
         exprlst = node.expression
     else:
         exprlst = exprlst + ', ' + node.expression
         
     if (not node.left and not node.right):
-        print(exprlst)
+        path_no += 1
+        path = 'Case ' + str(path_no) + ': '+ exprlst
+        if len(path) > 180:
+            print(path[:180] + '.....(cont.)')
+        else:
+            print(path)
     if node.left:
         parseExecutionTree(node.left, exprlst)
     if node.right:
         parseExecutionTree(node.right, exprlst)
 
+case_no = 0
 def getConstraints(node, constlst = ''):
-    
+    global case_no
     if node.constraints:
         if(constlst == ''):
             constlst = node.constraints
@@ -63,8 +73,17 @@ def getConstraints(node, constlst = ''):
             constlst = constlst + ', ' + node.constraints
         
     if (not node.left and not node.right):
-        print(constlst)
+        case_no += 1
+        print('Case ' + str(case_no) + ': ' + constlst)
     if node.left:
         getConstraints(node.left, constlst)
     if node.right:
         getConstraints(node.right, constlst)
+
+def generateFileName(fileName=''):
+    now = datetime.now()
+    dt_string = now.strftime("%d%m%Y_%H%M%S")
+    if(fileName==''):
+        return dt_string
+    else:
+        return fileName + '_' + dt_string
