@@ -47,38 +47,53 @@ path_no = 0
 def parseExecutionTree(node, exprlst = ''):
     global path_no
     if(exprlst == ''):
-        exprlst = node.expression
+        exprlst = node.expression + '\t' + str(node.variables)
     else:
-        exprlst = exprlst + ', ' + node.expression
+        exprlst = exprlst + '\n' + node.expression + '\t' + str(node.variables)
         
     if (not node.left and not node.right):
         path_no += 1
-        path = 'Case ' + str(path_no) + ': '+ exprlst
-        if len(path) > 180:
-            print(path[:180] + '.....(cont.)')
-        else:
-            print(path)
+        path = '\nCase ' + str(path_no) + ': \n\n'+ exprlst
+        print(path)
     if node.left:
         parseExecutionTree(node.left, exprlst)
     if node.right:
         parseExecutionTree(node.right, exprlst)
 
-case_no = 0
-def getConstraints(node, constlst = ''):
-    global case_no
-    if node.constraints:
-        if(constlst == ''):
-            constlst = node.constraints
-        else:
-            constlst = constlst + ', ' + node.constraints
+
+def getConstraints(node):
+    case_no = 0
+    def getCons(node, constlst = ''):
+        if node.constraints:
+            if(constlst == ''):
+                constlst = node.constraints
+            else:
+                constlst = constlst + ', ' + node.constraints
+            
+        if (not node.left and not node.right):
+            case_no += 1
+            print('Case ' + str(case_no) + ': ' + constlst)
+        if node.left:
+            getCons(node.left, constlst)
+        if node.right:
+            getCons(node.right, constlst)
+
+seq_no = 0
+def getVariables(node, constlst=[]):
+    global seq_no
+    if node.variables:
+        constlst.append(node.variables)
         
     if (not node.left and not node.right):
-        case_no += 1
-        print('Case ' + str(case_no) + ': ' + constlst)
+        seq_no += 1
+        print('Case ' + str(seq_no) + ': ')
+        for c in constlst:
+            print(c)
+        print()
     if node.left:
-        getConstraints(node.left, constlst)
+        getVariables(node.left, constlst)
     if node.right:
-        getConstraints(node.right, constlst)
+        getVariables(node.right, constlst)
 
 def generateFileName(fileName=''):
     now = datetime.now()
@@ -87,3 +102,9 @@ def generateFileName(fileName=''):
         return dt_string
     else:
         return fileName + '_' + dt_string
+    
+def duplicateListOfList(listOfList):
+    tmpList = []
+    for lst in listOfList:
+        tmpList.append(lst[0:])
+    return tmpList

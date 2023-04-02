@@ -83,7 +83,7 @@ def cli():
         print('File: ' + str(filename) + ' compiled successfully\n')
 
         if(args.executiontree or args.constraints):
-            execution_tree, _ = getExecutionTree(ast)
+            execution_tree = getExecutionTree(ast)
             if(args.executiontree):
                 print()
                 parseExecutionTree(execution_tree)
@@ -91,6 +91,8 @@ def cli():
             if(args.constraints):
                 print()
                 getConstraints(execution_tree)
+                print()
+                #getVariables(execution_tree)
 
 if __name__ == '__main__':
     cli()
