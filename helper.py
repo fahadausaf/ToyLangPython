@@ -237,16 +237,12 @@ def getExpressionsWithValue(node):
                     varList.append([node.symbols[0], node.symbols[1]])
 
         if node.condition:
-            # if exprlst == '':
-            #     exprlst = node.condition[0]
-            # else:
-            #     exprlst = exprlst + ' && ' + node.condition[0]
-
-            #print(node.condition[1])
-            exprVal = getExpressionValue(node.condition[1], varList)
+            exprVal = '(' + str(getExpressionValue(node.condition[1], varList)) + ')'
+            if not node.condition[2]:
+                exprVal = '!' + exprVal
             
             if exprlst == '':
-                exprlst = str(exprVal)
+                exprlst = exprVal
             else:
                 exprlst = exprlst + ' && ' + str(exprVal)
         

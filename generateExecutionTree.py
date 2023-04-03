@@ -113,14 +113,14 @@ def getExecutionTree(statement, symbolTable = [], iter = 0):
         else:
             elseBody = getExecutionTree(ifThenElse.elseStatement, cloneListOfList(symbolTable))
         
-        trueBranch = ExecutionTreeNode(str(constraints), thenBody.variables, 'True-Branch', None, (condition, ifThenElse.ifCondition))
+        trueBranch = ExecutionTreeNode(str(constraints), thenBody.variables, 'True-Branch', None, (condition, ifThenElse.ifCondition, True))
         trueBranch.right = thenBody
 
         if elseBody:
-            falseBranch = ExecutionTreeNode('!(' + str(constraints) + ')', elseBody.variables, 'False-Branch', None, (notCondition, ifThenElse.ifCondition))
+            falseBranch = ExecutionTreeNode('!(' + str(constraints) + ')', elseBody.variables, 'False-Branch', None, (notCondition, ifThenElse.ifCondition, False))
             falseBranch.right = elseBody
         else:
-            falseBranch = ExecutionTreeNode('!(' + str(constraints) + ')', cloneListOfList(symbolTable), 'False-Branch', None, (notCondition,ifThenElse.ifCondition))
+            falseBranch = ExecutionTreeNode('!(' + str(constraints) + ')', cloneListOfList(symbolTable), 'False-Branch', None, (notCondition,ifThenElse.ifCondition, False))
             falseBranch.right = elseBody
         
         ifThenNode = ExecutionTreeNode(None, cloneListOfList(symbolTable), 'If-Then-Else', None, None)
