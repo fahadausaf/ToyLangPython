@@ -1,10 +1,55 @@
 from datetime import datetime
+from grammar import *
+from codeGenerator import *
 
 class Enumm(set):
     def __getattr__(self, name):
         if name in self:
             return name
         raise AttributeError
+
+def getExpressionValue(expression, symbolTable=[]):
+    code = ''
+
+    if (type(expression) == NumericValue):
+        numericValue = NumericValue()
+        numericValue.value = expression.value
+        code = code + str(expression.value)
+
+    elif (type(expression) == StringValue):
+        strValue = StringValue()
+        strValue.value = expression.value
+        code = code + str(expression.value)
+    
+    elif (type(expression) == VariableExpression):
+        ident = expression.identifier
+        for symbol in symbolTable:
+            if symbol[0] == ident:
+                if symbol[1]:
+                    ident = symbol[1]
+        code = code + ident
+
+    elif (type(expression) == ArithmaticExpression):
+        code = getExpressionValue(expression.left, symbolTable)
+        code = code + generateArithmaticOperand(expression.operand)
+        code = code + getExpressionValue(expression.right, symbolTable)
+
+    elif (type(expression) == LogicExpression):
+        code = getExpressionValue(expression.left, symbolTable)
+        code = code + generateLogicOperand(expression.operand)
+        code = code + getExpressionValue(expression.right, symbolTable)
+
+    elif (type(expression) == UnaryExpression):
+        unaryExp = UnaryExpression()
+        unaryExp = expression
+
+        if unaryExp.operand == UnaryOperands.Minus:
+            code = code + '-'
+        else:
+            code = code + '!'
+
+        code = code + getExpressionValue(unaryExp.expression, symbolTable)
+    return code
 
 def printTokens(tokenList):
     n = 1
@@ -41,55 +86,6 @@ def prettyPrint(code):
         newCode = newCode + newLine
 
     return newCode
-
-
-path_no = 0
-def parseExecutionTree_old(node, exprlst = ''):
-    global path_no
-    if(exprlst == ''):
-        exprlst = node.expression + '\t' + str(node.variables)
-    else:
-        exprlst = exprlst + '\n' + node.expression + '\t' + str(node.variables)
-        
-    if (not node.left and not node.right):
-        path_no += 1
-        path = '\nCase ' + str(path_no) + ': \n\n'+ exprlst
-        print(path)
-    if node.left:
-        parseExecutionTree_old(node.left, exprlst)
-    if node.right:
-        parseExecutionTree_old(node.right, exprlst)
-
-
-def parseExecutionTree(node):
-    global case_no
-    case_no = 0
-    def parseET(node, exprlst = ''):
-        global case_no
-        symbol = '-'
-        constraint = '-'
-        if node.symbols:
-            symbol = str(node.symbols)
-        if node.constraints:
-            constraint = str(node.constraints)
-        if(exprlst == ''):
-            exprlst = node.expression.ljust(25, ' ') + '\t' + symbol.ljust(40, ' ') + '\t' + constraint
-        else:
-            exprlst = exprlst + '\n' + node.expression.ljust(25, ' ') + '\t' + symbol.ljust(40, ' ') + '\t' + constraint
-            
-        if (not node.left and not node.right):
-            case_no += 1
-            print('\nCase: ' + str(case_no))
-            print('Action'.ljust(25, ' ') + '\tSymbol(s)'.ljust(40, ' ') + '\t\tConditions')
-            print('-'.ljust(100, '-'))
-            print(exprlst)
-        if node.left:
-            parseET(node.left, exprlst)
-        if node.right:
-            parseET(node.right, exprlst)
-    
-    parseET(node)
-
 
 def getConstraints(node):
     case_no = 0
@@ -131,9 +127,9 @@ def getSymbols(node):
             for sym in symlst:
                 print(sym)
         if node.left:
-            getSym(node.left, duplicateListOfList(symlst))
+            getSym(node.left, cloneListOfList(symlst))
         if node.right:
-            getSym(node.right, duplicateListOfList(symlst))
+            getSym(node.right, cloneListOfList(symlst))
 
     getSym(node)
 
@@ -162,8 +158,107 @@ def generateFileName(fileName=''):
     else:
         return fileName + '_' + dt_string
     
-def duplicateListOfList(listOfList):
+def cloneListOfList(listOfList):
     tmpList = []
     for lst in listOfList:
         tmpList.append(lst[0:])
     return tmpList
+
+def getExpressions(node):
+    global case_no
+    case_no = 0
+    def getExpr(node, exprlst = ''):
+        global case_no
+        
+        if node.condition:
+            if exprlst == '':
+                exprlst = node.condition[0]
+            else:
+                exprlst = exprlst + ' && ' + node.condition[0]
+        
+        if node.left:
+            getExpr(node.left, exprlst)
+
+        if node.right:
+            getExpr(node.right, exprlst)
+
+        if not node.left and not node.right:
+            case_no += 1
+            print('Case ' + str(case_no) + ': ' + exprlst)
+
+    getExpr(node)
+
+def getExecutionSequenceDetail(node):
+    global case_no
+    case_no = 0
+    def parseET(node, exprlst = ''):
+        global case_no
+        symbol = '-'
+        condition = '-'
+        if node.symbols:
+            symbol = str(node.symbols)
+        if node.condition:
+            condition = str(node.condition[0])
+        if(exprlst == ''):
+            exprlst = node.expression.ljust(25, ' ') + '\t' + symbol.ljust(40, ' ') + '\t' + condition
+        else:
+            exprlst = exprlst + '\n' + node.expression.ljust(25, ' ') + '\t' + symbol.ljust(40, ' ') + '\t' + condition
+            
+        if (not node.left and not node.right):
+            case_no += 1
+            print('\nCase: ' + str(case_no))
+            print('Action'.ljust(25, ' ') + '\tSymbol(s)'.ljust(40, ' ') + '\t\tCondition(s)')
+            print('-'.ljust(100, '-'))
+            print(exprlst)
+        if node.left:
+            parseET(node.left, exprlst)
+        if node.right:
+            parseET(node.right, exprlst)
+    
+    parseET(node)
+
+def getExpressionsWithValue(node):
+    global case_no
+    case_no = 0
+    def getExpr(node, exprlst = '', varList = []):
+        global case_no
+        
+        if node.symbols:
+            if isinstance(node.symbols, list):
+                None
+            else:
+                varExist = False
+                for var in varList:
+                    if var[0] == node.symbols[0]:
+                        var[1] = node.symbols[1]
+                        varExist = True
+                        break
+                if not varExist:
+                    varList.append([node.symbols[0], node.symbols[1]])
+
+        if node.condition:
+            # if exprlst == '':
+            #     exprlst = node.condition[0]
+            # else:
+            #     exprlst = exprlst + ' && ' + node.condition[0]
+
+            #print(node.condition[1])
+            exprVal = getExpressionValue(node.condition[1], varList)
+            
+            if exprlst == '':
+                exprlst = str(exprVal)
+            else:
+                exprlst = exprlst + ' && ' + str(exprVal)
+        
+        if node.left:
+            getExpr(node.left, exprlst, cloneListOfList(varList))
+
+        if node.right:
+            getExpr(node.right, exprlst, cloneListOfList(varList))
+
+        if not node.left and not node.right:
+            case_no += 1
+            print('Case ' + str(case_no) + ': ' + exprlst)
+
+    getExpr(node)
+

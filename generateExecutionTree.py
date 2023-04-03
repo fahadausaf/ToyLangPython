@@ -26,49 +26,6 @@ def insertNode(head, node):
             head.right = newNode
 
 
-def getExpressionValue(expression, symbolTable=[]):
-    code = ''
-
-    if (type(expression) == NumericValue):
-        numericValue = NumericValue()
-        numericValue.value = expression.value
-        code = code + str(expression.value)
-
-    elif (type(expression) == StringValue):
-        strValue = StringValue()
-        strValue.value = expression.value
-        code = code + str(expression.value)
-    
-    elif (type(expression) == VariableExpression):
-        ident = expression.identifier
-        for symbol in symbolTable:
-            if symbol[0] == ident:
-                if symbol[1]:
-                    ident = symbol[1]
-        code = code + ident
-
-    elif (type(expression) == ArithmaticExpression):
-        code = getExpressionValue(expression.left, symbolTable)
-        code = code + generateArithmaticOperand(expression.operand)
-        code = code + getExpressionValue(expression.right, symbolTable)
-
-    elif (type(expression) == LogicExpression):
-        code = getExpressionValue(expression.left, symbolTable)
-        code = code + generateLogicOperand(expression.operand)
-        code = code + getExpressionValue(expression.right, symbolTable)
-
-    elif (type(expression) == UnaryExpression):
-        unaryExp = UnaryExpression()
-        unaryExp = expression
-
-        if unaryExp.operand == UnaryOperands.Minus:
-            code = code + '-'
-        else:
-            code = code + '!'
-
-        code = code + getExpressionValue(unaryExp.expression, symbolTable)
-    return code
-
 
 
 def getExecutionTree(statement, symbolTable = [], iter = 0):
@@ -82,9 +39,9 @@ def getExecutionTree(statement, symbolTable = [], iter = 0):
         if statement.right:
             if(type(statement.left) == IfThenElse):
                 if left.left.variables:
-                    right = getExecutionTree(statement.right, duplicateListOfList(left.left.variables), iter+1)
+                    right = getExecutionTree(statement.right, cloneListOfList(left.left.variables), iter+1)
             else:
-                right = getExecutionTree(statement.right, duplicateListOfList(left.variables), iter+1)
+                right = getExecutionTree(statement.right, cloneListOfList(left.variables), iter+1)
 
         if(type(statement.left) == IfThenElse):
             insertNode(left, right)
@@ -112,12 +69,11 @@ def getExecutionTree(statement, symbolTable = [], iter = 0):
                 varName = p.value
                 symList.append((varName, None))
 
-        print(symList)
         
-        funBody = ExecutionTreeNode(None, duplicateListOfList(varList), 'Function Declaration', symList, None)
+        funBody = ExecutionTreeNode(None, cloneListOfList(varList), 'Function Declaration', symList, None)
         # process function body
         if(functionDef.functionBody):
-            funBody.right = getExecutionTree(functionDef.functionBody, duplicateListOfList(varList))
+            funBody.right = getExecutionTree(functionDef.functionBody, cloneListOfList(varList))
 
         retNode = funBody
     
@@ -126,11 +82,11 @@ def getExecutionTree(statement, symbolTable = [], iter = 0):
         declare = statement
         varName = declare.identifier.value
         
-        value = getExpressionValue(declare.expression, duplicateListOfList(symbolTable))
+        value = getExpressionValue(declare.expression, cloneListOfList(symbolTable))
 
         symbolTable.append([varName, value])
 
-        retNode = ExecutionTreeNode(None, duplicateListOfList(symbolTable), 'Declare Int', (varName, value), None)
+        retNode = ExecutionTreeNode(None, cloneListOfList(symbolTable), 'Declare Int', (varName, value), None)
     
     elif (type(statement) == DeclareCharVariable):
         declare = DeclareCharVariable()
@@ -146,40 +102,40 @@ def getExecutionTree(statement, symbolTable = [], iter = 0):
         ifThenElse = IfThenElse()
         ifThenElse = statement
 
-        constraints = getExpressionValue(ifThenElse.ifCondition, duplicateListOfList(symbolTable))
-        thenBody = getExecutionTree(ifThenElse.thenStatement, duplicateListOfList(symbolTable))
+        constraints = getExpressionValue(ifThenElse.ifCondition, cloneListOfList(symbolTable))
+        thenBody = getExecutionTree(ifThenElse.thenStatement, cloneListOfList(symbolTable))
 
-        print(ifThenElse.ifCondition)
-        print(constraints)
+        condition = str(generateExpression(ifThenElse.ifCondition))
+        notCondition = '!(' + condition + ')'
 
         if ifThenElse.elseStatement is None:
             elseBody = None
         else:
-            elseBody = getExecutionTree(ifThenElse.elseStatement, duplicateListOfList(symbolTable))
+            elseBody = getExecutionTree(ifThenElse.elseStatement, cloneListOfList(symbolTable))
         
-        trueBranch = ExecutionTreeNode(str(constraints), thenBody.variables, 'True-Branch', None, None)
+        trueBranch = ExecutionTreeNode(str(constraints), thenBody.variables, 'True-Branch', None, (condition, ifThenElse.ifCondition))
         trueBranch.right = thenBody
 
         if elseBody:
-            falseBranch = ExecutionTreeNode('!(' + str(constraints) + ')', elseBody.variables, 'False-Branch', None, None)
+            falseBranch = ExecutionTreeNode('!(' + str(constraints) + ')', elseBody.variables, 'False-Branch', None, (notCondition, ifThenElse.ifCondition))
             falseBranch.right = elseBody
         else:
-            falseBranch = ExecutionTreeNode('!(' + str(constraints) + ')', duplicateListOfList(symbolTable), 'False-Branch', None, None)
+            falseBranch = ExecutionTreeNode('!(' + str(constraints) + ')', cloneListOfList(symbolTable), 'False-Branch', None, (notCondition,ifThenElse.ifCondition))
             falseBranch.right = elseBody
         
-        ifThenNode = ExecutionTreeNode(None, duplicateListOfList(symbolTable), 'If-Then-Else', None, None)
+        ifThenNode = ExecutionTreeNode(None, cloneListOfList(symbolTable), 'If-Then-Else', None, None)
         ifThenNode.left = trueBranch
         ifThenNode.right = falseBranch
 
         retNode = ifThenNode
 
     elif (type(statement) == Printf):
-        node = ExecutionTreeNode(None, duplicateListOfList(symbolTable), 'Print', None, None)
+        node = ExecutionTreeNode(None, cloneListOfList(symbolTable), 'Print', None, None)
         retNode = node
     
     elif (type(statement) == Assignment):
         varName = statement.identifier.value
-        value = getExpressionValue(statement.expression, duplicateListOfList(symbolTable))
+        value = getExpressionValue(statement.expression, cloneListOfList(symbolTable))
 
         symbolExist = False
         for symbol in symbolTable:
@@ -190,7 +146,7 @@ def getExecutionTree(statement, symbolTable = [], iter = 0):
         if not symbolExist:
             symbolTable.append([varName, value])
 
-        node = ExecutionTreeNode(None, duplicateListOfList(symbolTable), 'Assignment', (varName, value), None)
+        node = ExecutionTreeNode(None, cloneListOfList(symbolTable), 'Assignment', (varName, value), None)
         
         retNode = node
     
