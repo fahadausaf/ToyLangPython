@@ -86,13 +86,14 @@ def cli():
             execution_tree = getExecutionTree(ast)
             if(args.executiontree):
                 print()
-                parseExecutionTree(execution_tree)
+                parseExecutionTree_old(execution_tree)
 
             if(args.constraints):
                 print()
-                getConstraints(execution_tree)
+                #getConstraints(execution_tree)
                 print()
                 #getVariables(execution_tree)
+                getSymbols(execution_tree)
 
 if __name__ == '__main__':
     cli()

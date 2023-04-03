@@ -4,12 +4,14 @@ from codeGenerator import *
 from helper import *
 
 class ExecutionTreeNode:
-    def __init__(self, constraints, variables, expression):
+    def __init__(self, constraints, variables, expression, symbols, condition):
         self.left = None
         self.right = None
         self.constraints = constraints
         self.variables = variables
         self.expression = expression
+        self.symbols = symbols
+        self.condition = condition
 
 def insertNode(head, node):
     if head.left:
@@ -18,7 +20,7 @@ def insertNode(head, node):
         insertNode(head.right, node)
     else:
         if node:
-            newNode = ExecutionTreeNode(node.constraints, node.variables, node.expression)
+            newNode = ExecutionTreeNode(node.constraints, node.variables, node.expression, node.symbols, node.condition)
             newNode.left = node.left
             newNode.right = node.right
             head.right = newNode
@@ -72,7 +74,7 @@ def getExpressionValue(expression, symbolTable=[]):
 def getExecutionTree(statement, symbolTable = [], iter = 0):
     # node to return after function execution
     retNode = None
-    
+
     if (type(statement) == StatementSequence):
         left = getExecutionTree(statement.left, symbolTable[0:], iter+1)
         
@@ -91,6 +93,7 @@ def getExecutionTree(statement, symbolTable = [], iter = 0):
                 left.right = right
                
         retNode = left
+
     
     elif (type(statement) == FunctionDefinition):
         functionDef = FunctionDefinition()
@@ -102,8 +105,16 @@ def getExecutionTree(statement, symbolTable = [], iter = 0):
             for p in functionDef.parameterList:
                 varName = p.value
                 varList.append([varName, None])
+
+        symList = []
+        if(functionDef.parameterList):
+            for p in functionDef.parameterList:
+                varName = p.value
+                symList.append((varName, None))
+
+        print(symList)
         
-        funBody = ExecutionTreeNode(None, duplicateListOfList(varList), 'Function Declaration')
+        funBody = ExecutionTreeNode(None, duplicateListOfList(varList), 'Function Declaration', symList, None)
         # process function body
         if(functionDef.functionBody):
             funBody.right = getExecutionTree(functionDef.functionBody, duplicateListOfList(varList))
@@ -119,7 +130,7 @@ def getExecutionTree(statement, symbolTable = [], iter = 0):
 
         symbolTable.append([varName, value])
 
-        retNode = ExecutionTreeNode(None, duplicateListOfList(symbolTable), 'Declare Int')
+        retNode = ExecutionTreeNode(None, duplicateListOfList(symbolTable), 'Declare Int', (varName, value), None)
     
     elif (type(statement) == DeclareCharVariable):
         declare = DeclareCharVariable()
@@ -129,7 +140,7 @@ def getExecutionTree(statement, symbolTable = [], iter = 0):
 
         symbolTable.append([varName, value])
 
-        retNode = ExecutionTreeNode(None, symbolTable[0:], 'Declare Char')
+        retNode = ExecutionTreeNode(None, symbolTable[0:], 'Declare Char', (varName, value), None)
 
     elif (type(statement) == IfThenElse):
         ifThenElse = IfThenElse()
@@ -138,29 +149,32 @@ def getExecutionTree(statement, symbolTable = [], iter = 0):
         constraints = getExpressionValue(ifThenElse.ifCondition, duplicateListOfList(symbolTable))
         thenBody = getExecutionTree(ifThenElse.thenStatement, duplicateListOfList(symbolTable))
 
+        print(ifThenElse.ifCondition)
+        print(constraints)
+
         if ifThenElse.elseStatement is None:
             elseBody = None
         else:
             elseBody = getExecutionTree(ifThenElse.elseStatement, duplicateListOfList(symbolTable))
         
-        trueBranch = ExecutionTreeNode(str(constraints), thenBody.variables, 'True-Branch')
+        trueBranch = ExecutionTreeNode(str(constraints), thenBody.variables, 'True-Branch', None, None)
         trueBranch.right = thenBody
 
         if elseBody:
-            falseBranch = ExecutionTreeNode('!(' + str(constraints) + ')', elseBody.variables, 'False-Branch')
+            falseBranch = ExecutionTreeNode('!(' + str(constraints) + ')', elseBody.variables, 'False-Branch', None, None)
             falseBranch.right = elseBody
         else:
-            falseBranch = ExecutionTreeNode('!(' + str(constraints) + ')', duplicateListOfList(symbolTable), 'False-Branch')
+            falseBranch = ExecutionTreeNode('!(' + str(constraints) + ')', duplicateListOfList(symbolTable), 'False-Branch', None, None)
             falseBranch.right = elseBody
         
-        ifThenNode = ExecutionTreeNode(None, symbolTable[0:], 'If-Then-Else')
+        ifThenNode = ExecutionTreeNode(None, duplicateListOfList(symbolTable), 'If-Then-Else', None, None)
         ifThenNode.left = trueBranch
         ifThenNode.right = falseBranch
 
         retNode = ifThenNode
 
     elif (type(statement) == Printf):
-        node = ExecutionTreeNode(None, symbolTable[0:], 'Print')
+        node = ExecutionTreeNode(None, duplicateListOfList(symbolTable), 'Print', None, None)
         retNode = node
     
     elif (type(statement) == Assignment):
@@ -176,7 +190,7 @@ def getExecutionTree(statement, symbolTable = [], iter = 0):
         if not symbolExist:
             symbolTable.append([varName, value])
 
-        node = ExecutionTreeNode(None, duplicateListOfList(symbolTable), 'Assignment')
+        node = ExecutionTreeNode(None, duplicateListOfList(symbolTable), 'Assignment', (varName, value), None)
         
         retNode = node
     
