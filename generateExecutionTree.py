@@ -105,8 +105,8 @@ def getExecutionTree(statement, symbolTable = [], iter = 0):
         constraints = getExpressionValue(ifThenElse.ifCondition, cloneListOfList(symbolTable))
         thenBody = getExecutionTree(ifThenElse.thenStatement, cloneListOfList(symbolTable))
 
-        condition = str(generateExpression(ifThenElse.ifCondition))
-        notCondition = '!(' + condition + ')'
+        condition = str(generateSMTExpression(ifThenElse.ifCondition))
+        notCondition = 'Not(' + condition + ')'
 
         if ifThenElse.elseStatement is None:
             elseBody = None
@@ -117,10 +117,10 @@ def getExecutionTree(statement, symbolTable = [], iter = 0):
         trueBranch.right = thenBody
 
         if elseBody:
-            falseBranch = ExecutionTreeNode('!(' + str(constraints) + ')', elseBody.variables, 'False-Branch', None, (notCondition, ifThenElse.ifCondition, False))
+            falseBranch = ExecutionTreeNode('Not(' + str(constraints) + ')', elseBody.variables, 'False-Branch', None, (notCondition, ifThenElse.ifCondition, False))
             falseBranch.right = elseBody
         else:
-            falseBranch = ExecutionTreeNode('!(' + str(constraints) + ')', cloneListOfList(symbolTable), 'False-Branch', None, (notCondition,ifThenElse.ifCondition, False))
+            falseBranch = ExecutionTreeNode('Not(' + str(constraints) + ')', cloneListOfList(symbolTable), 'False-Branch', None, (notCondition,ifThenElse.ifCondition, False))
             falseBranch.right = elseBody
         
         ifThenNode = ExecutionTreeNode(None, cloneListOfList(symbolTable), 'If-Then-Else', None, None)

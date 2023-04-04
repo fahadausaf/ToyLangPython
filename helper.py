@@ -51,6 +51,56 @@ def getExpressionValue(expression, symbolTable=[]):
         code = code + getExpressionValue(unaryExp.expression, symbolTable)
     return code
 
+negation = False
+def getSMTExpressionValue(expression, symbolTable=[]):
+    global negation
+    code = ''
+
+    if (type(expression) == NumericValue):
+        numericValue = NumericValue()
+        numericValue.value = expression.value
+        code = code + str(expression.value)
+
+    elif (type(expression) == StringValue):
+        strValue = StringValue()
+        strValue.value = expression.value
+        code = code + str(expression.value)
+    
+    elif (type(expression) == VariableExpression):
+        ident = expression.identifier
+        for symbol in symbolTable:
+            if symbol[0] == ident:
+                if symbol[1]:
+                    ident = symbol[1]
+        if negation:
+            code = code + '(' + ident + ')'
+            negation = False
+        else:
+            code = code + ident
+
+    elif (type(expression) == ArithmaticExpression):
+        code = getSMTExpressionValue(expression.left, symbolTable)
+        code = code + generateArithmaticOperand(expression.operand)
+        code = code + getSMTExpressionValue(expression.right, symbolTable)
+
+    elif (type(expression) == LogicExpression):
+        code = getSMTExpressionValue(expression.left, symbolTable)
+        code = code + generateSMTLogicOperand(expression.operand)
+        code = code + getSMTExpressionValue(expression.right, symbolTable)
+
+    elif (type(expression) == UnaryExpression):
+        unaryExp = UnaryExpression()
+        unaryExp = expression
+
+        if unaryExp.operand == UnaryOperands.Minus:
+            code = code + '-'
+        else:
+            code = code + 'Not'
+            negation = True
+
+        code = code + getSMTExpressionValue(unaryExp.expression, symbolTable)
+    return code
+
 def printTokens(tokenList):
     n = 1
     for t in tokenList:
@@ -217,7 +267,7 @@ def getExecutionSequenceDetail(node):
     
     parseET(node)
 
-def getExpressionsWithValue(node):
+def getExpressionsWithValue_old(node):
     global case_no
     case_no = 0
     def getExpr(node, exprlst = '', varList = []):
@@ -239,12 +289,12 @@ def getExpressionsWithValue(node):
         if node.condition:
             exprVal = '(' + str(getExpressionValue(node.condition[1], varList)) + ')'
             if not node.condition[2]:
-                exprVal = '!' + exprVal
+                exprVal = 'Not' + exprVal
             
             if exprlst == '':
                 exprlst = exprVal
             else:
-                exprlst = exprlst + ' && ' + str(exprVal)
+                exprlst = exprlst + ', ' + str(exprVal)
         
         if node.left:
             getExpr(node.left, exprlst, cloneListOfList(varList))
@@ -257,4 +307,58 @@ def getExpressionsWithValue(node):
             print('Case ' + str(case_no) + ': ' + exprlst)
 
     getExpr(node)
+
+def getSMTExpressions(node):
+    global exprList
+    exprList = []
+    
+    global case_no
+    case_no = 0
+    
+    def getExpr(node, expr = '', varList = []):
+        global case_no
+        global exprList 
+        
+        if node.symbols:
+            if isinstance(node.symbols, list):
+                None
+            else:
+                varExist = False
+                for var in varList:
+                    if var[0] == node.symbols[0]:
+                        var[1] = node.symbols[1]
+                        varExist = True
+                        break
+                if not varExist:
+                    varList.append([node.symbols[0], node.symbols[1]])
+
+        if node.condition:
+            #print(node.condition[0])
+            exprVal = str(getSMTExpressionValue(node.condition[1], varList))
+            if not node.condition[2]:
+                exprVal = 'Not(' + exprVal + ')'
+            
+            if expr == '':
+                expr = exprVal
+            else:
+                expr = expr + ', ' + str(exprVal)
+        
+        if node.left:
+            getExpr(node.left, expr, cloneListOfList(varList))
+
+        if node.right:
+            getExpr(node.right, expr, cloneListOfList(varList))
+
+        if not node.left and not node.right:
+            case_no += 1
+            #print('print("Case " + "' + str(case_no) + '")\nsolve(' + exprlst + ')')
+            exprList.append(expr)
+    getExpr(node)
+    return exprList
+
+def printSMTExpressions(exprList):
+    case_no = 1
+    for expr in exprList:
+        print('Case ' + str(case_no) + ': ' + str(expr))
+        case_no += 1
 

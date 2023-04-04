@@ -26,6 +26,22 @@ def generateLogicOperand(operand):
         return ' != '
     elif (operand == LogicOperands.And):
         return ' && '
+    
+def generateSMTLogicOperand(operand):
+    if (operand == LogicOperands.LessThan):
+        return ' < '
+    elif (operand == LogicOperands.LessThanEqualTo):
+        return ' <= '
+    elif (operand == LogicOperands.GreaterThan):
+        return ' > '
+    elif (operand == LogicOperands.GreaterThanEqualTo):
+        return ' >= '
+    elif (operand == LogicOperands.EqualTo):
+        return ' == '
+    elif (operand == LogicOperands.NotEqualTo):
+        return ' != '
+    elif (operand == LogicOperands.And):
+        return ', '
 
 def generateExpression(expression):
     code = ''
@@ -63,6 +79,44 @@ def generateExpression(expression):
             code = code + '!'
 
         code = code + generateExpression(unaryExp.expression)
+    return code
+
+def generateSMTExpression(expression):
+    code = ''
+
+    if (type(expression) == NumericValue):
+        numericValue = NumericValue()
+        numericValue.value = expression.value
+        code = code + generateStatement(numericValue)
+
+    elif (type(expression) == StringValue):
+        strValue = StringValue()
+        strValue.value = expression.value
+        code = code + generateStatement(strValue)
+    
+    elif (type(expression) == VariableExpression):
+        code = code + '(' + expression.identifier + ')'
+
+    elif (type(expression) == ArithmaticExpression):
+        code = generateSMTExpression(expression.left)
+        code = code + generateArithmaticOperand(expression.operand)
+        code = code + generateSMTExpression(expression.right)
+
+    elif (type(expression) == LogicExpression):
+        code = generateSMTExpression(expression.left)
+        code = code + generateSMTLogicOperand(expression.operand)
+        code = code + generateSMTExpression(expression.right)
+
+    elif (type(expression) == UnaryExpression):
+        unaryExp = UnaryExpression()
+        unaryExp = expression
+
+        if unaryExp.operand == UnaryOperands.Minus:
+            code = code + '-'
+        else:
+            code = code + 'Not'
+
+        code = code + generateSMTExpression(unaryExp.expression)
     return code
 
 def generateStatement(statement):
