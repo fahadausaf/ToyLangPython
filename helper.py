@@ -333,7 +333,6 @@ def getSMTExpressions(node):
                     varList.append([node.symbols[0], node.symbols[1]])
 
         if node.condition:
-            #print(node.condition[0])
             exprVal = str(getSMTExpressionValue(node.condition[1], varList))
             if not node.condition[2]:
                 exprVal = 'Not(' + exprVal + ')'
@@ -351,7 +350,6 @@ def getSMTExpressions(node):
 
         if not node.left and not node.right:
             case_no += 1
-            #print('print("Case " + "' + str(case_no) + '")\nsolve(' + exprlst + ')')
             exprList.append(expr)
     getExpr(node)
     return exprList
