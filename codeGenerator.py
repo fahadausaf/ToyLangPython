@@ -164,6 +164,35 @@ def generateStatement(statement):
         if(functionDef.parameterList):
             paramSeparator = False
             for p in functionDef.parameterList:
+                paramName = p[0].value
+                paramType = p[1].value
+
+                if paramSeparator:
+                    code = code + ', ' + paramType + ' ' + paramName
+                else:
+                    code = code + paramType + ' ' + paramName
+                paramSeparator = True
+        
+        code = code + ')\n{\n'
+
+        # Handle Function Body
+        if(functionDef.functionBody):
+            code =  code + generateStatement(functionDef.functionBody)
+
+
+        code = code + '\n\nreturn 0;\n}'
+
+    elif (type(statement) == FunDefinition):
+
+        functionDef = FunDefinition()
+        functionDef = statement
+
+        # Handle Function Signature
+        code = 'int ' + functionDef.identifier.value + '('
+        
+        if(functionDef.parameterList):
+            paramSeparator = False
+            for p in functionDef.parameterList:
                 if paramSeparator:
                     code = code + ', int ' + p.value
                 else:

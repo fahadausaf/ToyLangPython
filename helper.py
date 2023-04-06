@@ -267,47 +267,6 @@ def getExecutionSequenceDetail(node):
     
     parseET(node)
 
-def getExpressionsWithValue_old(node):
-    global case_no
-    case_no = 0
-    def getExpr(node, exprlst = '', varList = []):
-        global case_no
-        
-        if node.symbols:
-            if isinstance(node.symbols, list):
-                None
-            else:
-                varExist = False
-                for var in varList:
-                    if var[0] == node.symbols[0]:
-                        var[1] = node.symbols[1]
-                        varExist = True
-                        break
-                if not varExist:
-                    varList.append([node.symbols[0], node.symbols[1]])
-
-        if node.condition:
-            exprVal = '(' + str(getExpressionValue(node.condition[1], varList)) + ')'
-            if not node.condition[2]:
-                exprVal = 'Not' + exprVal
-            
-            if exprlst == '':
-                exprlst = exprVal
-            else:
-                exprlst = exprlst + ', ' + str(exprVal)
-        
-        if node.left:
-            getExpr(node.left, exprlst, cloneListOfList(varList))
-
-        if node.right:
-            getExpr(node.right, exprlst, cloneListOfList(varList))
-
-        if not node.left and not node.right:
-            case_no += 1
-            print('Case ' + str(case_no) + ': ' + exprlst)
-
-    getExpr(node)
-
 def getSMTExpressions(node):
     global exprList
     exprList = []

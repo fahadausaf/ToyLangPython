@@ -83,6 +83,11 @@ class FunctionDefinition(Statement):
     parameterList = None
     functionBody = Statement()
 
+class FunDefinition(Statement):
+    identifier = None
+    parameterList = None
+    functionBody = Statement()
+
 class Assignment(Statement):
     identifier = None
     expression = Expression()

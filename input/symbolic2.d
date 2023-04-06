@@ -1,7 +1,7 @@
 function symbolic(a,b,c) = {
-    int x = 1;
-    int y = 2;
-    int z = 3 + x;
+    int x = 0;
+    int y = 0;
+    int z = 0;
 
     if a then
         x = -2;
@@ -10,8 +10,6 @@ function symbolic(a,b,c) = {
     if b > 5 then
         if !a & c then
 			y = 1;
-        else
-            y = 78;
 		endif;
 		z = 2;
     endif;

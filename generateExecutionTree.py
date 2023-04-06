@@ -33,8 +33,8 @@ def getExecutionTree(statement, symbolTable = [], iter = 0):
 
     if (type(statement) == StatementSequence):
         left = getExecutionTree(statement.left, symbolTable[0:])
-
         right = getExecutionTree(statement.right)
+        
         if(type(statement.left) == IfThenElse):
             insertNode(left, right)
         else:
@@ -49,12 +49,28 @@ def getExecutionTree(statement, symbolTable = [], iter = 0):
         functionDef = statement
 
         # get function parameters list
-        varList = []
+        symList = []
+        conList = []
         if(functionDef.parameterList):
             for p in functionDef.parameterList:
-                varName = p.value
-                varList.append([varName, None])
+                paramName = p[0].value
+                paramType = p[1].value
+                symList.append((paramName, None))
+                conList.append((paramName, paramType))
 
+        
+        funBody = ExecutionTreeNode(conList, 'Function Declaration', symList, None)
+        # process function body
+        if(functionDef.functionBody):
+            funBody.right = getExecutionTree(functionDef.functionBody)
+
+        retNode = funBody
+
+    elif (type(statement) == FunDefinition):
+        functionDef = FunDefinition()
+        functionDef = statement
+
+        # get function parameters list
         symList = []
         if(functionDef.parameterList):
             for p in functionDef.parameterList:

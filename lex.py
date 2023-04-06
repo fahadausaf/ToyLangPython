@@ -99,6 +99,10 @@ def lex(fileName):
             tokenPos = colPos
             colPos += 1
             tokenList.append((ExpressionTokens.TERMINATOR, linePos, tokenPos, colPos))
+        elif char == ':':
+            tokenPos = colPos
+            colPos += 1
+            tokenList.append((ExpressionTokens.COLON, linePos, tokenPos, colPos))
         elif char == '<':
             tokenPos = colPos
             colPos += 1

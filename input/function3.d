@@ -1,3 +1,3 @@
-function myFun(a,b,c) = {
+function myFun(a: bool, b: int, c: bool) = {
     int x = 0;
 }

@@ -41,6 +41,7 @@ class LogicTokens(Enum):
 
 class ExpressionTokens(Enum):
     TERMINATOR = ';'
+    COLON = ':'
     ASSIGNMENT = '='
     COMMA = ','
     OPEN_PAREN = '('
@@ -52,10 +53,12 @@ class ExpressionTokens(Enum):
 
 class KeywordTokens(Enum):
     INT = 'int'
+    BOOL = 'bool'
     CHAR = 'char'
     PRINTF = 'printf'
     IF = 'if'
     THEN = 'then'
     ELSE = 'else'
     ENDIF = 'endif'
+    FUN = 'fun'
     FUNCTION = 'function'

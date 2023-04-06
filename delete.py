@@ -6,7 +6,7 @@ from helper import *
 from generateExecutionTree import *
 
 
-file_ifThenElse = 'input\\symbolic.d'
+file_ifThenElse = 'input\\function3.d'
 
 tokenList = lex(file_ifThenElse)
 ast, _ = parseStatement(0, tokenList)
